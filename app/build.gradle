@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+android {
+    namespace 'com.gruffins.birch.app'
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.gruffins.birch.app"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField("String", "BIRCH_API_KEY", "\"${localProperties['birch.apiKey']}\"")
+            buildConfigField("String", "BIRCH_HOST", "\"${localProperties['birch.host']}\"")
+        }
+        release {
+            buildConfigField("String", "BIRCH_API_KEY", "\"${localProperties['birch.apiKey']}\"")
+            buildConfigField("String", "BIRCH_HOST", "\"${localProperties['birch.host']}\"")
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation project(path: ':birch')
+}

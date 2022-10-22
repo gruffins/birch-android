@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:layout_margin="8dp">
+    <Button
+        android:id="@+id/toggle_debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Toggle Debug" />
+
+    <Button
+        android:id="@+id/trace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trace" />
+
+    <Button
+        android:id="@+id/debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Debug" />
+
+    <Button
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Info" />
+
+    <Button
+        android:id="@+id/warn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Warn" />
+
+    <Button
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Error" />
+</androidx.appcompat.widget.LinearLayoutCompat>
