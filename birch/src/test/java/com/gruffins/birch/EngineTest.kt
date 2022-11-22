@@ -1,5 +1,6 @@
 package com.gruffins.birch
 
+import android.content.Context
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -8,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import java.io.File
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -33,11 +35,13 @@ class EngineTest {
 
     private lateinit var eventBus: EventBus
     private lateinit var engine: Engine
+    private lateinit var context: Context
 
     @Before
     fun setup() {
         MockKAnnotations.init(this)
 
+        context = RuntimeEnvironment.getApplication()
         eventBus = EventBus()
         engine = spyk(Engine(source, logger, storage, network, executor, eventBus))
     }
@@ -62,7 +66,7 @@ class EngineTest {
 
     @Test
     fun `flush calls logger to roll file`() {
-        engine.flush()
+        engine.flushSynchronous()
         verify { logger.rollFile() }
     }
 
@@ -73,21 +77,9 @@ class EngineTest {
         every { file.length() } returns 1L
         every { logger.nonCurrentFiles() } returns listOf(file)
 
-        engine.flush()
+        engine.flushSynchronous()
 
         verify { network.uploadLogs(file, any()) }
-    }
-
-    @Test
-    fun `calling flush twice does not upload the logs twice`() {
-        val file = mockk<File>(relaxed = true)
-
-        every { file.length() } returns 1L
-        every { logger.nonCurrentFiles() } returns listOf(file)
-
-        repeat(2) { engine.flush() }
-
-        verify(exactly = 1) { network.uploadLogs(file, any()) }
     }
 
     @Test
@@ -97,10 +89,16 @@ class EngineTest {
         every { logger.nonCurrentFiles() } returns listOf(file)
         every { file.length() } returns 0L
 
-        engine.flush()
+        engine.flushSynchronous()
 
         verify { file.delete() }
         verify(exactly = 0) { network.uploadLogs(file, any()) }
+    }
+
+    @Test
+    fun `flush async`() {
+        engine.flush()
+        verify { executor.execute(any()) }
     }
 
     @Test
@@ -111,19 +109,25 @@ class EngineTest {
         every { logger.nonCurrentFiles() } returns listOf(file)
         every { network.uploadLogs(file, any()) } answers { secondArg<(Boolean) -> Unit>().invoke(true) }
 
-        engine.flush()
+        engine.flushSynchronous()
 
         verify { file.delete() }
     }
 
     @Test
     fun `updateSource calls network to sync source`() {
-        engine.updateSource(source)
+        engine.updateSourceSynchronous(source)
         verify { network.syncSource(source) }
     }
 
     @Test
-    fun `sync configuration sets the log level on storage, level on logger and flush period on storage`() {
+    fun `updateSource async`() {
+        engine.updateSource(source)
+        verify { executor.execute(any()) }
+    }
+
+    @Test
+    fun `syncConfiguration sets the log level on storage, level on logger and flush period on storage`() {
         val level = Logger.Level.TRACE
         val flushPeriod = 1L
         every { network.getConfiguration(source, any()) } answers {
@@ -134,7 +138,7 @@ class EngineTest {
             secondArg<(JSONObject) -> Unit>().invoke(json)
         }
 
-        engine.syncConfiguration()
+        engine.syncConfigurationSynchronous()
 
         verifyAll {
             storage.flushPeriod
@@ -143,26 +147,29 @@ class EngineTest {
             storage setProperty "flushPeriod" value flushPeriod
         }
     }
+
     @Test
-    fun `trimFiles calls the logger to trim files`() {
+    fun `syncConfiguration async`() {
+        engine.syncConfiguration()
+        verify { executor.execute(any()) }
+    }
+
+    @Test
+    fun `trimFiles removes old files`() {
+        val directory = File(context.filesDir, Logger.DIRECTORY).also { it.mkdirs() }
+        val file = File(directory, System.currentTimeMillis().toString()).also { it.createNewFile() }
+        val timestamp = System.currentTimeMillis() + Engine.MAX_FILE_AGE_SECONDS * 1000L + 1L
+
+        every { logger.nonCurrentFiles() } returns listOf(file)
+
+        engine.trimFilesSynchronous(timestamp)
+
+        assert(!file.exists())
+    }
+
+    @Test
+    fun `trimFiles async`() {
         engine.trimFiles()
-        verify { logger.trimFiles(any()) }
-    }
-
-    @Test
-    fun `overriding the flush period takes priority over storage settings`() {
-        storage.flushPeriod = 0
-        engine.overrideFlushPeriod = 2
-
-        verify { executor.scheduleAtFixedRate(any(), 0, 2, TimeUnit.SECONDS) }
-    }
-
-    @Test
-    fun `unsetting override flush period reverts to storage settings`() {
-        storage.flushPeriod = 0
-        engine.overrideFlushPeriod = 2
-        engine.overrideFlushPeriod = null
-
-        verify { executor.scheduleAtFixedRate(any(), 0, 0, TimeUnit.SECONDS) }
+        verify { executor.execute(any()) }
     }
 }

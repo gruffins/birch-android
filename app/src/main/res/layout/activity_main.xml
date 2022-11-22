@@ -40,4 +40,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Error" />
+
+    <Button
+        android:id="@+id/stress_test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stress Test" />
+
 </androidx.appcompat.widget.LinearLayoutCompat>

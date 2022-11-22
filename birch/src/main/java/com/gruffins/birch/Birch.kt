@@ -9,14 +9,16 @@ class Birch {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private var engine: Engine? = null
+        internal var flushPeriod: Long? = null
 
         /**
          * Sets the logger in debug mode. Logger is set to TRACE and uploading to 30 seconds.
          * Be sure to disable this in a production build.
          */
         @JvmStatic
-        var debug: Boolean by Delegates.observable(false) { _, _, _ ->
-            engine?.overrideFlushPeriod = if (debug) Engine.DEBUG_FLUSH_PERIOD_SECONDS else null
+        var debug: Boolean by Delegates.observable(false) { _, _, newValue ->
+            flushPeriod = if (newValue) 30 else null
+            engine?.syncConfiguration()
         }
 
         /**

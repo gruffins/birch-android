@@ -11,7 +11,6 @@ import java.util.concurrent.Executors
 
 internal class Network(
     private val apiKey: String,
-    private val executorService: ExecutorService = Executors.newSingleThreadExecutor { r -> Thread(r, "Birch-Network") },
     private val configuration: Configuration = Configuration(),
     private val http: HTTP = HTTP()
 ) {
@@ -21,33 +20,29 @@ internal class Network(
     }
 
     fun uploadLogs(file: File, callback: (Boolean) -> Unit) {
-        executorService.execute {
+        safe {
             if (Birch.debug) {
                 Birch.d { "[Birch] Pushing logs ${file.name}." }
             }
-
-            safe {
-                http.postFile(
-                    createURL(configuration.uploadPath),
-                    file,
-                    mapOf("X-API-Key" to apiKey)
-                ) {
-                    if (it.unauthorized) {
-                        Birch.e { "[Birch] Invalid API key." }
-                        callback(false)
-                    } else {
-                        if (Birch.debug) {
-                            Birch.d { "[Birch] Upload logs responded. success=${it.success}"}
-                        }
-                        callback(it.success)
+            http.postFile(
+                createURL(configuration.uploadPath),
+                file,
+                mapOf("X-API-Key" to apiKey)
+            ) {
+                if (it.unauthorized) {
+                    Birch.e { "[Birch] Invalid API key." }
+                    callback(false)
+                } else {
+                    if (Birch.debug) {
+                        Birch.d { "[Birch] Upload logs responded. success=${it.success}"}
                     }
+                    callback(it.success)
                 }
             }
         }
     }
 
     fun syncSource(source: Source, callback: (() -> Unit)? = null) {
-        executorService.execute {
             safe {
                 if (Birch.debug) {
                     Birch.d { "[Birch] Pushing source." }
@@ -75,38 +70,35 @@ internal class Network(
                     }
                 }
             }
-        }
     }
 
     fun getConfiguration(source: Source, callback: (json: JSONObject) -> Unit) {
-        executorService.execute {
-            safe {
-                if (Birch.debug) {
-                    Birch.d { "[Birch] Fetching source configuration." }
-                }
+        safe {
+            if (Birch.debug) {
+                Birch.d { "[Birch] Fetching source configuration." }
+            }
 
-                http.get(
-                    createURL(
-                        String.format(
-                            Locale.US,
-                            configuration.configurationPath,
-                            source.uuid
-                        )
-                    ),
-                    mapOf(
-                        "X-API-Key" to apiKey,
-                        "Content-Type" to "application/json"
+            http.get(
+                createURL(
+                    String.format(
+                        Locale.US,
+                        configuration.configurationPath,
+                        source.uuid
                     )
-                ) {
-                    if (it.unauthorized) {
-                        Birch.e { "[Birch] Invalid API key" }
-                    } else if (it.success) {
-                        if (Birch.debug) {
-                            Birch.d { "[Birch] Get configuration responded. success=${it.success}" }
-                        }
-                        val json = JSONObject(it.body)
-                        callback(json.getJSONObject("source_configuration"))
+                ),
+                mapOf(
+                    "X-API-Key" to apiKey,
+                    "Content-Type" to "application/json"
+                )
+            ) {
+                if (it.unauthorized) {
+                    Birch.e { "[Birch] Invalid API key" }
+                } else if (it.success) {
+                    if (Birch.debug) {
+                        Birch.d { "[Birch] Get configuration responded. success=${it.success}" }
                     }
+                    val json = JSONObject(it.body)
+                    callback(json.getJSONObject("source_configuration"))
                 }
             }
         }
