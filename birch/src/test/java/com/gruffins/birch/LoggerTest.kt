@@ -62,12 +62,4 @@ class LoggerTest {
         logger.rollFile()
         assert(directory.list()?.size == 2)
     }
-
-    @Test
-    fun `trimFiles clears logs older than the max age`() {
-        logger.rollFile()
-        val timestamp = System.currentTimeMillis() + Logger.MAX_AGE_SECONDS * 1000L + 1L
-        logger.trimFiles(timestamp)
-        assert(directory.list()?.size == 1)
-    }
 }

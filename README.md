@@ -20,8 +20,8 @@ allprojects {
 
 Add birch to your module build.gradle.
 ```
-implementation 'com.gruffins:birch-android:birch:1.0.1
-implementation 'com.gruffins:birch-android:birch-timber:1.0.1 // (optional Tree to plug into Timber)
+implementation 'com.gruffins:birch-android:birch:1.0.2
+implementation 'com.gruffins:birch-android:birch-timber:1.0.2 // (optional Tree to plug into Timber)
 ```
 
 # Setup

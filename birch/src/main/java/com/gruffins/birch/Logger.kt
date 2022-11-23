@@ -11,6 +11,10 @@ import java.lang.Thread.currentThread
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+/**
+ * The logger is responsible for writing to the current file and rolling the file when necessary.
+ * It is not responsible for tracking previously rolled files.
+ */
 internal class Logger(
     context: Context,
     storage: Storage,
@@ -20,7 +24,6 @@ internal class Logger(
         const val THREAD_NAME = "Birch-Logger"
         const val DIRECTORY = "birch"
         const val MAX_FILE_SIZE_BYTES = 1024 * 512 * 1
-        const val MAX_AGE_SECONDS = 60L * 60L * 60L * 3
     }
 
     enum class Level(val level: Int) {
@@ -90,6 +93,10 @@ internal class Logger(
             val timestamp = currentTimeMillis().toString()
             val rollTo = File(directory, timestamp)
 
+            if (Birch.debug) {
+                Birch.d { "[Birch] Rolled file to $timestamp" }
+            }
+
             bufferedWriter?.close()
             fileWriter?.close()
             currentFile.renameTo(rollTo)
@@ -106,13 +113,6 @@ internal class Logger(
         } else {
             executorService.submit(block).get()
         }
-    }
-
-    fun trimFiles(now: Long = currentTimeMillis()) {
-        val timestamp = now - MAX_AGE_SECONDS * 1000L
-        nonCurrentFiles()
-            ?.filter { it.name.toLong() < timestamp }
-            ?.forEach { it.delete() }
     }
 
     private fun needsRollFile(): Boolean {

@@ -1,6 +1,5 @@
 package com.gruffins.birch
 
-import com.gruffins.birch.utils.TestExecutorService
 import com.gruffins.birch.utils.TestHTTP
 import org.json.JSONObject
 import org.junit.Before
@@ -9,12 +8,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import java.io.File
-import java.util.concurrent.ExecutorService
 
 @RunWith(RobolectricTestRunner::class)
 class NetworkTest {
 
-    private lateinit var executor: ExecutorService
     private lateinit var configuration: Network.Configuration
     private lateinit var source: Source
     private lateinit var storage: Storage
@@ -22,7 +19,6 @@ class NetworkTest {
 
     @Before
     fun setup() {
-        executor = TestExecutorService()
         configuration = Network.Configuration("127.0.0.1")
         storage = Storage(RuntimeEnvironment.getApplication())
         eventBus = EventBus()
@@ -154,7 +150,6 @@ class NetworkTest {
     private fun createNetwork(response: HTTP.Response): Network {
         return Network(
             "apiKey",
-            executor,
             configuration,
             TestHTTP(response)
         )
