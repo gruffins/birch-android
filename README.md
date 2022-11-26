@@ -32,14 +32,14 @@ implementation 'com.gruffins:birch-android:birch-timber:1.0.2 // (optional Tree 
 # Setup
 
 In your application class, initialize the logger.
-```
+```kotlin
 class MyApp: Application() {
 
   override fun onCreate() {
     super.onCreate()
 
     Birch.initialize(this, "YOUR_API_KEY")
-    Birch.debug = true // this should be turned off in a production build. Debug mode allows you to see Birch operating and artifically lowers the log level and flush period.
+    Birch.debug = true // this should be turned off in a production build. Debug mode allows you to see Birch operating and artificially lowers the log level and flush period.
     Birch.identifier = "your_user_id" // this is optional but highly recommended
   }
 }
@@ -47,7 +47,7 @@ class MyApp: Application() {
 # Logging
 Use the logger as you would with the default Android logger.
 
-```
+```kotlin
 Birch.t("trace message) // simplest
 Birch.t { "trace message" } // most performant especially if it's expensive to build the log message.
 
@@ -66,7 +66,7 @@ Birch.e { "error message" }
 
 Block based logging is more performant since the blocks do not get executed unless the current log level includes the level of the log. See the following example:
 
-```
+```kotlin
 Birch.d {
   var message = "hello"
   repeat(10000) { message = message + "hello" }
@@ -81,7 +81,7 @@ Device level configuration is left to the server so you can remotely control it.
 
 ### Debugging
 Debug mode will lower the log level to `TRACE` and set the upload period to every 30 seconds. You should turn this __OFF__ in a production build otherwise you will not be able to modify the log settings remotely.
-```
+```kotlin
 Birch.debug = true
 ```
 
@@ -94,7 +94,7 @@ You should set an identifier so you can identify the source in the dashboard. If
 
 You can also set custom properties on the source that will propagate to all drains.
 
-```
+```kotlin
 fun onLogin(user: User) {
   Birch.identifier = user.id
   Birch.customProperties = mapOf("country" to user.country)
@@ -105,15 +105,35 @@ fun onLogin(user: User) {
 
 To comply with different sets of regulations such as GDPR or CCPA, you may be required to allow users to opt out of log collection.
 
-```
+```kotlin
 Birch.optOut = true
 ```
 
 Your application is responsible for changing this and setting it to the correct value at launch. Birch will not remember the last setting and it defaults to `false`.
 
+# Log Scrubbing
+
+Birch comes preconfigured with an email and password scrubber to ensure sensitive data is __NOT__ logged. Emails and passwords are replaced with `[FILTERED]` at the logger level so the data never reaches Birch servers.
+
+If you wish to configure additional scrubbers, implement the `Scrubber` protocol and initialize the logger with all the scrubbers you want to use.
+
+```kotlin
+import com.gruffins.birch.Scrubber
+
+class YourScrubber: Scrubber {
+    override fun scrub(input: String): String {
+        return input.replace("your_regex".toRegex(), "[FILTERED]")
+    }
+}
+```
+
+```kotlin
+Birch.initialize(this, "api_key", listOf(PasswordScrubber(), EmailScrubber(), YourScrubber()))
+```
+
 # Timber
 You can use the supplied tree if you want to send your logs from Timber to Birch.
 
-```
+```kotlin
 Timber.plant(BirchTree())
 ```

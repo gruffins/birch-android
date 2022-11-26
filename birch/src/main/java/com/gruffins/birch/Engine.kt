@@ -15,7 +15,8 @@ internal class Engine(
     private val storage: Storage,
     private val network: Network,
     private val executorService: ScheduledExecutorService,
-    eventBus: EventBus
+    private val eventBus: EventBus,
+    private val scrubbers: List<Scrubber>
 ): EventBus.Listener {
     companion object {
         const val SYNC_PERIOD_SECONDS = 60L * 15L
@@ -65,6 +66,7 @@ internal class Engine(
         }
 
         val timestamp = currentTimestamp
+        val scrubbed = { scrubbers.fold(message()) { acc, scrubber -> scrubber.scrub(acc) } }
 
         logger.log(
             level,
@@ -73,9 +75,10 @@ internal class Engine(
                     json.put("timestamp", timestamp)
                     json.put("level", level.level)
                     json.put("source", source.toJson())
-                    json.put("message", message())
+                    json.put("message", scrubbed())
                 }.toString()
-            }, message
+            },
+            scrubbed
         )
         return true
     }
