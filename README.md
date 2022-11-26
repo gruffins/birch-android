@@ -115,7 +115,7 @@ Your application is responsible for changing this and setting it to the correct 
 
 Birch comes preconfigured with an email and password scrubber to ensure sensitive data is __NOT__ logged. Emails and passwords are replaced with `[FILTERED]` at the logger level so the data never reaches Birch servers.
 
-If you wish to configure additional scrubbers, implement the `Scrubber` protocol and initialize the logger with all the scrubbers you want to use.
+If you wish to configure additional scrubbers, implement the `Scrubber` interface and initialize the logger with all the scrubbers you want to use.
 
 ```kotlin
 import com.gruffins.birch.Scrubber
