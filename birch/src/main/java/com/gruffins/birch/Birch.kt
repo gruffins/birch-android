@@ -22,6 +22,12 @@ class Birch {
         }
 
         /**
+         * Sets the logger to opt out. This disables logs collection and source synchronization.
+         */
+        @JvmStatic
+        var optOut: Boolean = false
+
+        /**
          * Override the default host that should be used. Leave null to use the standard host.
          * This must be called BEFORE init().
          */
