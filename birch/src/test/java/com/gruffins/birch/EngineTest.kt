@@ -5,6 +5,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.json.JSONObject
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,6 +47,12 @@ class EngineTest {
         engine = spyk(Engine(source, logger, storage, network, executor, eventBus))
     }
 
+    @After
+    fun teardown() {
+        Birch.optOut = false
+        Birch.debug = false
+    }
+
     @Test
     fun `queues all jobs`() {
         engine.start()
@@ -59,19 +66,30 @@ class EngineTest {
     }
 
     @Test
-    fun `engine forwards log calls to logger`() {
+    fun `log() forwards to the logger`() {
         engine.log(Logger.Level.TRACE) { "test" }
         verify { logger.log(Logger.Level.TRACE, any(), any()) }
     }
 
     @Test
-    fun `flush calls logger to roll file`() {
+    fun `log() returns true if not opted out`() {
+        assert(engine.log(Logger.Level.TRACE) { "test" })
+    }
+
+    @Test
+    fun `log() returns false if opted out`() {
+        Birch.optOut = true
+        assert(!engine.log(Logger.Level.TRACE) { "test" })
+    }
+
+    @Test
+    fun `flush() calls logger to roll file`() {
         engine.flushSynchronous()
         verify { logger.rollFile() }
     }
 
     @Test
-    fun `flush calls network to upload logs`() {
+    fun `flush() calls network to upload logs`() {
         val file = mockk<File>(relaxed = true)
 
         every { file.length() } returns 1L
@@ -83,7 +101,7 @@ class EngineTest {
     }
 
     @Test
-    fun `flush uploads the logs and deletes the file`() {
+    fun `flush() uploads the logs and deletes the file`() {
         val file = mockk<File>(relaxed = true)
 
         every { logger.nonCurrentFiles() } returns listOf(file)
@@ -96,13 +114,24 @@ class EngineTest {
     }
 
     @Test
-    fun `flush async`() {
+    fun `flush() async`() {
         engine.flush()
         verify { executor.execute(any()) }
     }
 
     @Test
-    fun `flush deletes files on success`() {
+    fun `flush() returns true if not opted out`() {
+        assert(engine.flushSynchronous())
+    }
+
+    @Test
+    fun `flush() returns false if opted out`() {
+        Birch.optOut = true
+        assert(!engine.flushSynchronous())
+    }
+
+    @Test
+    fun `flush() deletes files on success`() {
         val file = mockk<File>(relaxed = true)
 
         every { file.length() } returns 1L
@@ -115,19 +144,30 @@ class EngineTest {
     }
 
     @Test
-    fun `updateSource calls network to sync source`() {
+    fun `updateSource() calls network to sync source`() {
         engine.updateSourceSynchronous(source)
         verify { network.syncSource(source) }
     }
 
     @Test
-    fun `updateSource async`() {
+    fun `updateSource() returns true if not opted out`() {
+        assert(engine.updateSourceSynchronous(source))
+    }
+
+    @Test
+    fun `updateSource() returns false if opted out`() {
+        Birch.optOut = true
+        assert(!engine.updateSourceSynchronous(source))
+    }
+
+    @Test
+    fun `updateSource() async`() {
         engine.updateSource(source)
         verify { executor.execute(any()) }
     }
 
     @Test
-    fun `syncConfiguration sets the log level on storage, level on logger and flush period on storage`() {
+    fun `syncConfiguration() sets the log level on storage, level on logger and flush period on storage`() {
         val level = Logger.Level.TRACE
         val flushPeriod = 1L
         every { network.getConfiguration(source, any()) } answers {
@@ -149,9 +189,20 @@ class EngineTest {
     }
 
     @Test
-    fun `syncConfiguration async`() {
+    fun `syncConfiguration() async`() {
         engine.syncConfiguration()
         verify { executor.execute(any()) }
+    }
+
+    @Test
+    fun `syncConfiguration() returns true if not opted out`() {
+        assert(engine.syncConfigurationSynchronous())
+    }
+
+    @Test
+    fun `syncConfiguration() returns false if opted out`() {
+        Birch.optOut = true
+        assert(!engine.syncConfigurationSynchronous())
     }
 
     @Test

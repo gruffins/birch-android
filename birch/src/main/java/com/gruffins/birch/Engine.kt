@@ -59,7 +59,11 @@ internal class Engine(
         }
     }
 
-    fun log(level: Logger.Level, message: () -> String) {
+    fun log(level: Logger.Level, message: () -> String): Boolean {
+        if (Birch.optOut) {
+            return false
+        }
+
         val timestamp = currentTimestamp
 
         logger.log(
@@ -73,9 +77,14 @@ internal class Engine(
                 }.toString()
             }, message
         )
+        return true
     }
 
-    fun flushSynchronous() {
+    fun flushSynchronous(): Boolean {
+        if (Birch.optOut) {
+            return false
+        }
+
         safe {
             logger.rollFile()
             logger.nonCurrentFiles()?.sorted()?.forEach {
@@ -93,21 +102,31 @@ internal class Engine(
                 }
             }
         }
+        return true
     }
 
     fun flush() {
         executorService.execute { flushSynchronous() }
     }
 
-    fun updateSourceSynchronous(source: Source) {
+    fun updateSourceSynchronous(source: Source): Boolean {
+        if (Birch.optOut) {
+            return false
+        }
+
         network.syncSource(source)
+        return true
     }
 
     fun updateSource(source: Source) {
         executorService.execute { updateSourceSynchronous(source) }
     }
 
-    fun syncConfigurationSynchronous() {
+    fun syncConfigurationSynchronous(): Boolean {
+        if (Birch.optOut) {
+            return false
+        }
+
         network.getConfiguration(source) {
             val logLevel = Logger.Level.fromInt(it.optInt("log_level", Logger.Level.ERROR.level))
             val period = it.optLong("flush_period_seconds", FLUSH_PERIOD_SECONDS)
@@ -118,6 +137,7 @@ internal class Engine(
 
             flushPeriod = period
         }
+        return true
     }
 
     fun syncConfiguration() {
