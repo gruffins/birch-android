@@ -48,7 +48,7 @@ class MyApp: Application() {
 Use the logger as you would with the default Android logger.
 
 ```kotlin
-Birch.t("trace message) // simplest
+Birch.t("trace message") // simplest
 Birch.t { "trace message" } // most performant especially if it's expensive to build the log message.
 
 Birch.d("debug message")
