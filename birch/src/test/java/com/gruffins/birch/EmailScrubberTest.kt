@@ -32,4 +32,10 @@ class EmailScrubberTest {
         val input = "{\"email\": \"abcd@domain.com\"}"
         assert(scrubber.scrub(input) == "{\"email\": \"[FILTERED]\"}")
     }
+
+    @Test
+    fun `scrub() removes multiple emails`() {
+        val input = "abcd@domain.com asdf@domain.com"
+        assert(scrubber.scrub(input) == "[FILTERED] [FILTERED]")
+    }
 }
