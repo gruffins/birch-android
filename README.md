@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://user-images.githubusercontent.com/381273/204187386-ec93e173-a6fa-40b1-8b74-c52a0c5048b3.png" />
+</p>
+
 # Birch
 ![Tests](https://github.com/gruffins/birch-android/actions/workflows/tests.yml/badge.svg)
 ![Release](https://jitpack.io/v/com.gruffins/birch-android.svg)
