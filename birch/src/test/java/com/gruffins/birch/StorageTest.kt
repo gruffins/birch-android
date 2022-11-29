@@ -18,30 +18,42 @@ class StorageTest {
     }
 
     @Test
-    fun `uuid has valid getter and setter`() {
+    fun `uuid() has valid getter and setter`() {
         val uuid = UUID.randomUUID().toString()
         storage.uuid = uuid
         assert(storage.uuid == uuid)
     }
 
     @Test
-    fun `logLevel has valid getter and setter`() {
+    fun `logLevel() has valid getter and setter`() {
         val level = Logger.Level.DEBUG
         storage.logLevel = level
         assert(storage.logLevel == level)
     }
 
     @Test
-    fun `identifier has valid getter and setter`() {
+    fun `identifier() has valid getter and setter`() {
         val identifier = "identifier"
         storage.identifier = identifier
         assert(storage.identifier == identifier)
     }
 
     @Test
-    fun `customerProperties has valid getter and setter`() {
+    fun `customProperties() has valid getter and setter`() {
         val map = mapOf("key" to "value")
         storage.customProperties = map
         assert(storage.customProperties!!["key"] == "value")
+    }
+
+    @Test
+    fun `customProperties() clears if set to null`() {
+        storage.customProperties = null
+        assert(storage.customProperties == null)
+    }
+
+    @Test
+    fun `flushPeriod() has valid getter and setter`() {
+        storage.flushPeriod = 1L
+        assert(storage.flushPeriod == 1L)
     }
 }

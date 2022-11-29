@@ -5,10 +5,10 @@ import android.content.Context
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class Birch {
+class Birch private constructor() {
     companion object {
         @SuppressLint("StaticFieldLeak")
-        private var engine: Engine? = null
+        internal var engine: Engine? = null
         internal var flushPeriod: Long? = null
 
         /**
@@ -106,7 +106,7 @@ class Birch {
          */
         @JvmStatic
         fun t(message: String) {
-            engine?.log(Logger.Level.TRACE) { -> message }
+            engine?.log(Logger.Level.TRACE) { message }
         }
 
         /**
@@ -117,7 +117,7 @@ class Birch {
          */
         @JvmStatic
         fun t(format: String, vararg args: Any?) {
-            engine?.log(Logger.Level.TRACE) { -> String.format(format, args) }
+            engine?.log(Logger.Level.TRACE) { String.format(format, args) }
         }
 
         /**
