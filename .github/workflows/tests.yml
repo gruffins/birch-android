@@ -15,4 +15,5 @@ jobs:
       - name: Specs
         run: |
           echo "birch.apiKey=apiKey" > local.properties
-          ./gradlew birch:test
+          ./gradlew birch:coverageReport
+      - uses: codecov/codecov-action@v3

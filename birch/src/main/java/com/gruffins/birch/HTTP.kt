@@ -61,12 +61,7 @@ internal open class HTTP {
             body?.let { byteArr -> it.outputStream.write(byteArr) }
         }
         try {
-            onResponse(
-                Response(
-                    connection.responseCode,
-                    connection.inputStream.bufferedReader().readText()
-                )
-            )
+            onResponse(parseResponse(connection))
         } catch (ex: Exception) {
             onResponse(Response(-1, ""))
         } finally {
@@ -74,7 +69,7 @@ internal open class HTTP {
         }
     }
 
-    private fun openConnection(method: String, url: URL, headers: Map<String, String>): HttpsURLConnection {
+    internal fun openConnection(method: String, url: URL, headers: Map<String, String>): HttpsURLConnection {
         return (url.openConnection() as HttpsURLConnection).also {
             it.requestMethod = method
             it.connectTimeout = 15_000
@@ -90,7 +85,7 @@ internal open class HTTP {
         }
     }
 
-    private fun parseResponse(connection: HttpsURLConnection): Response {
+    internal fun parseResponse(connection: HttpsURLConnection): Response {
         val responseCode = connection.responseCode
         val responseBody = if (responseCode in 100..399) {
             connection.inputStream.bufferedReader().readText()
@@ -108,6 +103,6 @@ internal open class HTTP {
             get() = statusCode in 100..399
 
         val failure: Boolean
-            get() = statusCode >= 400
+            get() = !success
     }
 }
