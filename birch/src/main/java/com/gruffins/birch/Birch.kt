@@ -68,7 +68,14 @@ class Birch private constructor() {
          * @param apiKey The API key generated from the Birch dashboard.
          */
         @JvmStatic
-        fun init(context: Context, apiKey: String) {
+        fun init(
+            context: Context,
+            apiKey: String,
+            scrubbers: List<Scrubber> = listOf(
+                PasswordScrubber(),
+                EmailScrubber()
+            )
+        ) {
             if (engine == null) {
                 val appContext = context.applicationContext
                 val eventBus = EventBus()
@@ -83,7 +90,8 @@ class Birch private constructor() {
                     storage,
                     network,
                     Executors.newScheduledThreadPool(1) { r -> Thread(r, "Birch-Engine") },
-                    eventBus
+                    eventBus,
+                    scrubbers
                 ).also {
                     it.start()
                 }

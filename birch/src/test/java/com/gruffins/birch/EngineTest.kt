@@ -44,7 +44,7 @@ class EngineTest {
 
         context = RuntimeEnvironment.getApplication()
         eventBus = EventBus()
-        engine = spyk(Engine(source, logger, storage, network, executor, eventBus))
+        engine = spyk(Engine(source, logger, storage, network, executor, eventBus, listOf(PasswordScrubber(), EmailScrubber())))
     }
 
     @After
@@ -80,6 +80,19 @@ class EngineTest {
     fun `log() returns false if opted out`() {
         Birch.optOut = true
         assert(!engine.log(Logger.Level.TRACE) { "test" })
+    }
+
+    @Test
+    fun `log() applies scrubbers`() {
+        val block = slot<() -> String>()
+
+        every {
+            logger.log(any(), any(), capture(block))
+        } answers { }
+
+        engine.log(Logger.Level.TRACE) { "https://birch.ryanfung.com/?email=asdf+fdsa@domain.com&password=password123" }
+
+        assert(block.captured.invoke() == "https://birch.ryanfung.com/?email=[FILTERED]&password=[FILTERED]")
     }
 
     @Test
