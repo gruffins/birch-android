@@ -85,14 +85,15 @@ class EngineTest {
     @Test
     fun `log() applies scrubbers`() {
         val block = slot<() -> String>()
+        val jsonBlock = slot<() -> String>()
 
-        every {
-            logger.log(any(), any(), capture(block))
-        } answers { }
+        every { source.toJson() } returns JSONObject()
+        every { logger.log(any(), capture(jsonBlock), capture(block)) } returns true
 
         engine.log(Logger.Level.TRACE) { "https://birch.ryanfung.com/?email=asdf+fdsa@domain.com&password=password123" }
 
         assert(block.captured.invoke() == "https://birch.ryanfung.com/?email=[FILTERED]&password=[FILTERED]")
+        assert(jsonBlock.captured.invoke().contains("?email=[FILTERED]&password=[FILTERED]"))
     }
 
     @Test

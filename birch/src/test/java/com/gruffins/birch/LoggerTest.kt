@@ -2,6 +2,8 @@ package com.gruffins.birch
 
 import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -60,7 +62,7 @@ class LoggerTest {
     }
 
     @Test
-    fun `rollFile moves the current file and creates a new current file`() {
+    fun `rollFile() moves the current file and creates a new current file`() {
         logger.rollFile()
         assert(logger.directory.list()?.size == 2)
     }
@@ -69,5 +71,20 @@ class LoggerTest {
     fun `logger skips logging if disk is full`() {
         ShadowStatFs.registerStats(logger.directory, 1, 0, 0)
         assert(!logger.log(Logger.Level.TRACE, { "a" }, { "a" }))
+    }
+
+    @Test
+    fun `log() with debug works at all levels`() {
+        Birch.debug = true
+        val block = mockk<() -> String>()
+
+        logger.log(Logger.Level.TRACE, { "test" }, block)
+        logger.log(Logger.Level.DEBUG, { "test" }, block)
+        logger.log(Logger.Level.INFO, { "test" }, block)
+        logger.log(Logger.Level.WARN, { "test" }, block)
+        logger.log(Logger.Level.ERROR, { "test" }, block)
+        logger.log(Logger.Level.NONE, { "test" }, block)
+
+        verify(exactly = 5) { block.invoke() }
     }
 }
