@@ -6,7 +6,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class Utils {
+internal class Utils private constructor() {
     companion object {
         private const val ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 

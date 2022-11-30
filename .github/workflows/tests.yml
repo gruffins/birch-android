@@ -1,5 +1,9 @@
 name: Android
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   specs:
@@ -15,4 +19,5 @@ jobs:
       - name: Specs
         run: |
           echo "birch.apiKey=apiKey" > local.properties
-          ./gradlew birch:test
+          ./gradlew birch:coverageReport
+      - uses: codecov/codecov-action@v3
