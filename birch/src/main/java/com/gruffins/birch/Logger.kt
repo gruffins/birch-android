@@ -1,6 +1,7 @@
 package com.gruffins.birch
 
 import android.content.Context
+import android.os.StatFs
 import android.util.Log
 import com.gruffins.birch.Utils.Companion.safe
 import java.io.BufferedWriter
@@ -40,8 +41,8 @@ internal class Logger(
     }
 
     var level: Level = storage.logLevel
+    val directory = File(context.filesDir, DIRECTORY)
 
-    private val directory = File(context.filesDir, DIRECTORY)
     private var currentFile = File(directory, "current")
     private var fileWriter: FileWriter? = null
     private var bufferedWriter: BufferedWriter? = null
@@ -50,8 +51,8 @@ internal class Logger(
         directory.mkdirs()
     }
 
-    fun log(level: Level, block: () -> String, original: () -> String) {
-        if (level >= this.level || Birch.debug) {
+    fun log(level: Level, block: () -> String, original: () -> String): Boolean {
+        if (diskAvailable() && (level >= this.level || Birch.debug)) {
             executorService.execute {
                 safe {
                     ensureCurrentFileExists()
@@ -79,7 +80,9 @@ internal class Logger(
                     }
                 }
             }
+            return true
         }
+        return false
     }
 
     fun nonCurrentFiles(): List<File>? {
@@ -127,5 +130,13 @@ internal class Logger(
 
     private fun isLoggerThread(): Boolean {
         return currentThread().name == THREAD_NAME
+    }
+
+    private fun diskAvailable(): Boolean {
+        return if (Utils.hasOSVersion(18)) {
+            StatFs(directory.absolutePath).availableBytes > 0
+        } else {
+            StatFs(directory.absolutePath).availableBlocks > 0
+        }
     }
 }

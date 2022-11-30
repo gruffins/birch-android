@@ -2,12 +2,15 @@ package com.gruffins.birch
 
 import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.shadows.ShadowStatFs
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
@@ -15,7 +18,6 @@ class LoggerTest {
 
     private lateinit var context: Context
     private lateinit var logger: Logger
-    private lateinit var directory: File
     private lateinit var currentFile: File
     private lateinit var storage: Storage
 
@@ -24,14 +26,16 @@ class LoggerTest {
         context = RuntimeEnvironment.getApplication()
         storage = Storage(context)
         logger = Logger(context, storage, TestExecutorService())
-        directory = File(context.filesDir, Logger.DIRECTORY)
-        currentFile = File(directory, "current")
+        currentFile = File(logger.directory, "current")
+
+        ShadowStatFs.registerStats(logger.directory, 1, 1, 1)
     }
 
     @After
     fun teardown() {
-        directory.deleteRecursively()
+        logger.directory.deleteRecursively()
         Birch.debug = false
+        ShadowStatFs.reset()
     }
 
     @Test
@@ -58,8 +62,29 @@ class LoggerTest {
     }
 
     @Test
-    fun `rollFile moves the current file and creates a new current file`() {
+    fun `rollFile() moves the current file and creates a new current file`() {
         logger.rollFile()
-        assert(directory.list()?.size == 2)
+        assert(logger.directory.list()?.size == 2)
+    }
+
+    @Test
+    fun `logger skips logging if disk is full`() {
+        ShadowStatFs.registerStats(logger.directory, 1, 0, 0)
+        assert(!logger.log(Logger.Level.TRACE, { "a" }, { "a" }))
+    }
+
+    @Test
+    fun `log() with debug works at all levels`() {
+        Birch.debug = true
+        val block = mockk<() -> String>()
+
+        logger.log(Logger.Level.TRACE, { "test" }, block)
+        logger.log(Logger.Level.DEBUG, { "test" }, block)
+        logger.log(Logger.Level.INFO, { "test" }, block)
+        logger.log(Logger.Level.WARN, { "test" }, block)
+        logger.log(Logger.Level.ERROR, { "test" }, block)
+        logger.log(Logger.Level.NONE, { "test" }, block)
+
+        verify(exactly = 5) { block.invoke() }
     }
 }
