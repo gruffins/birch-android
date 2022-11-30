@@ -5,6 +5,7 @@
 # Birch
 ![Tests](https://github.com/gruffins/birch-android/actions/workflows/tests.yml/badge.svg)
 ![Release](https://jitpack.io/v/com.gruffins/birch-android.svg)
+[![codecov](https://codecov.io/gh/gruffins/birch-android/branch/main/graph/badge.svg?token=CZ0HQ8VI6T)](https://codecov.io/gh/gruffins/birch-android)
 
 Simple, lightweight remote logging for Android.
 
