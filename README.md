@@ -25,8 +25,8 @@ allprojects {
 
 Add birch to your module build.gradle.
 ```
-implementation 'com.gruffins:birch-android:birch:1.1.0
-implementation 'com.gruffins:birch-android:birch-timber:1.1.0 // (optional Tree to plug into Timber)
+implementation 'com.gruffins.birch-android:birch:1.1.0'
+implementation 'com.gruffins.birch-android:birch-timber:1.1.0' // (optional Tree to plug into Timber)
 ```
 
 # Setup
@@ -38,7 +38,7 @@ class MyApp: Application() {
   override fun onCreate() {
     super.onCreate()
 
-    Birch.initialize(this, "YOUR_API_KEY")
+    Birch.init(this, "YOUR_API_KEY")
     Birch.debug = true // this should be turned off in a production build. Debug mode allows you to see Birch operating and artificially lowers the log level and flush period.
     Birch.identifier = "your_user_id" // this is optional but highly recommended
   }
