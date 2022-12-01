@@ -1,5 +1,10 @@
 # Changes
 
+1.1.0
+----------
+- Added default log scrubbers (emails and passwords)
+- Stop logger when disk is full
+
 1.0.2
 ----------
 - Fixes daily log trimming 
