@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.StatFs
 import android.util.Log
 import com.gruffins.birch.Utils.Companion.safe
-import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.lang.System.currentTimeMillis
@@ -45,7 +44,6 @@ internal class Logger(
 
     private var currentFile = File(directory, "current")
     private var fileWriter: FileWriter? = null
-    private var bufferedWriter: BufferedWriter? = null
 
     init {
         directory.mkdirs()
@@ -59,10 +57,10 @@ internal class Logger(
 
                     if (fileWriter == null) {
                         fileWriter = FileWriter(currentFile, true)
-                        bufferedWriter = BufferedWriter(fileWriter)
                     }
 
-                    bufferedWriter?.write(block() + ",\n")
+                    fileWriter?.write(block() + ",\n")
+                    fileWriter?.flush()
 
                     if (Birch.debug) {
                         when (level) {
@@ -100,7 +98,6 @@ internal class Logger(
                 Birch.d { "[Birch] Rolled file to $timestamp" }
             }
 
-            bufferedWriter?.close()
             fileWriter?.close()
             currentFile.renameTo(rollTo)
 
@@ -108,7 +105,6 @@ internal class Logger(
             currentFile.createNewFile()
 
             fileWriter = FileWriter(currentFile, true)
-            bufferedWriter = BufferedWriter(fileWriter)
         }
 
         if (isLoggerThread()) {
