@@ -44,6 +44,7 @@ class MyApp: Application() {
   }
 }
 ```
+
 # Logging
 Use the logger as you would with the default Android logger.
 
@@ -128,7 +129,7 @@ class YourScrubber: Scrubber {
 ```
 
 ```kotlin
-Birch.initialize(this, "api_key", listOf(PasswordScrubber(), EmailScrubber(), YourScrubber()))
+Birch.init(this, "api_key", listOf(PasswordScrubber(), EmailScrubber(), YourScrubber()))
 ```
 
 # Timber

@@ -70,11 +70,24 @@ class Birch private constructor() {
         @JvmStatic
         fun init(
             context: Context,
+            apiKey: String
+        ) {
+            init(context, apiKey, listOf(PasswordScrubber(), EmailScrubber()))
+        }
+
+        /**
+         * Initialize the Birch library with an application context and an API key generated
+         * from the Birch dashboard. This must be the first call to the logger.
+         *
+         * @param context An application context.
+         * @param apiKey The API key generated from the Birch dashboard.
+         * @param scrubbers The list of scrubbers to be used.
+         */
+        @JvmStatic
+        fun init(
+            context: Context,
             apiKey: String,
-            scrubbers: List<Scrubber> = listOf(
-                PasswordScrubber(),
-                EmailScrubber()
-            )
+            scrubbers: List<Scrubber>
         ) {
             if (engine == null) {
                 val appContext = context.applicationContext
@@ -145,7 +158,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun d(message: String) {
-            engine?.log(Logger.Level.DEBUG) { -> message }
+            engine?.log(Logger.Level.DEBUG) { message }
         }
 
         /**
@@ -156,7 +169,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun d(format: String, vararg args: Any?) {
-            engine?.log(Logger.Level.DEBUG) { -> String.format(format, args) }
+            engine?.log(Logger.Level.DEBUG) { String.format(format, args) }
         }
 
         /**
@@ -176,7 +189,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun i(message: String) {
-            engine?.log(Logger.Level.INFO) { -> message }
+            engine?.log(Logger.Level.INFO) { message }
         }
 
         /**
@@ -187,7 +200,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun i(format: String, vararg args: Any?) {
-            engine?.log(Logger.Level.INFO) { -> String.format(format, args) }
+            engine?.log(Logger.Level.INFO) { String.format(format, args) }
         }
 
         /**
@@ -207,7 +220,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun w(message: String) {
-            engine?.log(Logger.Level.WARN) { -> message }
+            engine?.log(Logger.Level.WARN) { message }
         }
 
         /**
@@ -218,7 +231,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun w(format: String, vararg args: Any?) {
-            engine?.log(Logger.Level.WARN) { -> String.format(format, args) }
+            engine?.log(Logger.Level.WARN) { String.format(format, args) }
         }
 
         /**
@@ -238,7 +251,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun e(message: String) {
-            engine?.log(Logger.Level.ERROR) { -> message }
+            engine?.log(Logger.Level.ERROR) { message }
         }
 
         /**
@@ -249,7 +262,7 @@ class Birch private constructor() {
          */
         @JvmStatic
         fun e(format: String, vararg args: Any?) {
-            engine?.log(Logger.Level.ERROR) { -> String.format(format, args) }
+            engine?.log(Logger.Level.ERROR) { String.format(format, args) }
         }
 
         /**
