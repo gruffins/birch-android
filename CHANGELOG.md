@@ -1,5 +1,10 @@
 # Changes
 
+1.1.1
+----------
+- Remove buffered writer to favor immediate writing
+- Improve java api
+
 1.1.0
 ----------
 - Added default log scrubbers (emails and passwords)
