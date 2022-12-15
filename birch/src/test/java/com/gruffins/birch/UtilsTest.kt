@@ -51,6 +51,17 @@ class UtilsTest {
     }
 
     @Test
+    fun `parsePublicKey() returns null with invalid public key`() {
+        assert(Utils.parsePublicKey("fake") == null)
+    }
+
+    @Test
+    fun `parsePublicKey() returns a public key with valid public key`() {
+        val output = Utils.parsePublicKey("-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvNd9jxohFki83udxjn1f\nFgg11FGQryDJBEYyR42+fiTJFBgBr5SYnaQTTkvK3lcPaGiZ/EcQ1OEm1ljeMSlM\nZlAoqR63pV9/Y4iKp/FwtQTrmQF9DdJ2CDPanbDcSLBIMhMEwa/qNPWkLn+5IXqF\n0HO/x8wN+CuLVmdqYb+K9g1mNch0STECj9YJuW3ca3Sk/huVf6QK1TRSS7QyCrXz\nFtp6I8XIqu1DCbPqvuwFOi37wSJe/VSyO7CRyQe921lqbDFm3WhZAL0HIMrZKe+l\n2/vpZRm491Qvygy3xN+se7ISwrKqbJtlVqMXjurRPvXMEB372GsfRBivnhu0vfNU\n0wIDAQAB\n-----END PUBLIC KEY-----\n")
+        assert(output != null)
+    }
+
+    @Test
     fun `safe() catches exceptions`() {
         Birch.debug = true
 

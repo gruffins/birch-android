@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.StatFs
 import android.util.Log
 import com.gruffins.birch.Utils.Companion.safe
+import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
 import java.lang.System.currentTimeMillis
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors
 internal class Logger(
     context: Context,
     storage: Storage,
+    private val encryption: Encryption?,
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor { r -> Thread(r, THREAD_NAME) }
 ) {
     companion object {
@@ -59,7 +61,16 @@ internal class Logger(
                         fileWriter = FileWriter(currentFile, true)
                     }
 
-                    fileWriter?.write(block() + ",\n")
+                    val message = encryption?.let { e ->
+                        JSONObject().also {
+                            it.put("em", e.encrypt(block()))
+                            it.put("ek", e.encryptedKey)
+                        }.toString()
+                    } ?: run {
+                        block()
+                    }
+
+                    fileWriter?.write("$message,\n")
                     fileWriter?.flush()
 
                     if (Birch.debug) {

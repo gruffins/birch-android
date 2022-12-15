@@ -1,8 +1,12 @@
 package com.gruffins.birch
 
 import android.os.Build
+import android.util.Base64
 import org.json.JSONException
 import org.json.JSONObject
+import java.security.KeyFactory
+import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,6 +48,23 @@ internal class Utils private constructor() {
                 } catch (ex: JSONException) {
                     null
                 }
+            }
+        }
+
+        fun parsePublicKey(pem: String): PublicKey? {
+            return try {
+                val factory = KeyFactory.getInstance("RSA")
+                val keySpec = X509EncodedKeySpec(
+                    Base64.decode(
+                        pem.replace("-----BEGIN PUBLIC KEY-----", "")
+                            .replace("-----END PUBLIC KEY-----", "")
+                            .replace("\n", ""),
+                        Base64.NO_WRAP
+                    )
+                )
+                factory.generatePublic(keySpec)
+            } catch (ex: Exception) {
+                null
             }
         }
 

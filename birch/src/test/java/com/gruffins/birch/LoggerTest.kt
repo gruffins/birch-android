@@ -12,6 +12,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.shadows.ShadowStatFs
 import java.io.File
+import java.security.KeyPairGenerator
 
 @RunWith(RobolectricTestRunner::class)
 class LoggerTest {
@@ -25,7 +26,7 @@ class LoggerTest {
     fun setup() {
         context = RuntimeEnvironment.getApplication()
         storage = Storage(context)
-        logger = Logger(context, storage, TestExecutorService())
+        logger = Logger(context, storage, null, TestExecutorService())
         currentFile = File(logger.directory, "current")
 
         ShadowStatFs.registerStats(logger.directory, 1, 1, 1)
@@ -86,5 +87,28 @@ class LoggerTest {
         logger.log(Logger.Level.NONE, { "test" }, block)
 
         verify(exactly = 5) { block.invoke() }
+    }
+
+    @Test
+    fun `log() with encryption encrypts the logs in the file`() {
+        val keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
+
+        logger = Logger(context, storage, Encryption(keyPair.public), TestExecutorService())
+        logger.level = Logger.Level.TRACE
+        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+
+        val content = currentFile.readText()
+        assert(content.contains("em"))
+        assert(content.contains("ek"))
+    }
+
+    @Test
+    fun `log() without encryption does not encrypt logs in the file`() {
+        logger.level = Logger.Level.TRACE
+        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+
+        val content = currentFile.readText()
+        assert(!content.contains("em"))
+        assert(!content.contains("ek"))
     }
 }
