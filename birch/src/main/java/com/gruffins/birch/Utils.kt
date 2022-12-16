@@ -51,7 +51,7 @@ internal class Utils private constructor() {
             }
         }
 
-        fun parsePublicKey(pem: String): PublicKey? {
+        fun parsePublicKey(pem: String): PublicKey {
             val factory = KeyFactory.getInstance("RSA")
             val keySpec = X509EncodedKeySpec(
                 Base64.decode(

@@ -17,11 +17,11 @@ internal class Encryption(
 
         fun create(publicKey: String): Encryption {
             try {
-                Utils.parsePublicKey(String(Base64.decode(publicKey.toByteArray(), Base64.NO_WRAP)))
-                    ?.let {
-                        return Encryption(it)
-                    }
-                throw Birch.InvalidPublicKeyException("Invalid public key")
+                return Encryption(
+                    Utils.parsePublicKey(
+                        String(Base64.decode(publicKey.toByteArray(), Base64.NO_WRAP))
+                    )
+                )
             } catch (ex: Exception) {
                 throw Birch.InvalidPublicKeyException("Invalid public key")
             }
