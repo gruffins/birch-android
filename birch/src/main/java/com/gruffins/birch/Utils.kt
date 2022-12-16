@@ -52,20 +52,16 @@ internal class Utils private constructor() {
         }
 
         fun parsePublicKey(pem: String): PublicKey? {
-            return try {
-                val factory = KeyFactory.getInstance("RSA")
-                val keySpec = X509EncodedKeySpec(
-                    Base64.decode(
-                        pem.replace("-----BEGIN PUBLIC KEY-----", "")
-                            .replace("-----END PUBLIC KEY-----", "")
-                            .replace("\n", ""),
-                        Base64.NO_WRAP
-                    )
+            val factory = KeyFactory.getInstance("RSA")
+            val keySpec = X509EncodedKeySpec(
+                Base64.decode(
+                    pem.replace("-----BEGIN PUBLIC KEY-----", "")
+                        .replace("-----END PUBLIC KEY-----", "")
+                        .replace("\n", ""),
+                    Base64.NO_WRAP
                 )
-                factory.generatePublic(keySpec)
-            } catch (ex: Exception) {
-                null
-            }
+            )
+            return factory.generatePublic(keySpec)
         }
 
         fun safe(lambda: () -> Unit) {
