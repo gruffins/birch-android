@@ -2,6 +2,7 @@ package com.gruffins.birch
 
 import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.After
@@ -77,7 +78,9 @@ class LoggerTest {
     @Test
     fun `log() with debug works at all levels`() {
         Birch.debug = true
+
         val block = mockk<() -> String>()
+        every { block.invoke() } returns "test"
 
         logger.log(Logger.Level.TRACE, { "test" }, block)
         logger.log(Logger.Level.DEBUG, { "test" }, block)

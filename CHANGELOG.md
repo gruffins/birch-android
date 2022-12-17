@@ -1,5 +1,9 @@
 # Changes
 
+1.2.1
+----------
+- Fixes incomplete log lines under certain edge cases.
+
 1.2.0
 ----------
 - Add encryption at rest
