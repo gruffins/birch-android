@@ -23,7 +23,7 @@ internal class Encryption(
                     )
                 )
             } catch (ex: Exception) {
-                throw Birch.InvalidPublicKeyException("Invalid public key")
+                throw Birch.InvalidPublicKeyException("The public key you provided is not correct. Please double check this value or remove the public key to disable device level encryption.")
             }
         }
     }

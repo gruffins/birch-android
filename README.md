@@ -92,7 +92,7 @@ The default configuration is `ERROR` and log flushing every hour. This means any
 
 ### Encryption
 
-We **HIGHLY** recommend using encryption to encrypt your logs at rest. If you leave out the public encryption key, Birch will log to the device in clear text.
+We **HIGHLY** recommend using encryption to encrypt your logs at rest. If you leave out the public encryption key, Birch will save logs on the device in clear text.
 
 An invalid public key will throw an exception.
 
