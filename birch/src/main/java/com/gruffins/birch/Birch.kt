@@ -72,7 +72,7 @@ class Birch private constructor() {
             context: Context,
             apiKey: String
         ) {
-            init(context, apiKey, listOf(PasswordScrubber(), EmailScrubber()))
+            init(context, apiKey, null, listOf(PasswordScrubber(), EmailScrubber()))
         }
 
         /**
@@ -81,20 +81,45 @@ class Birch private constructor() {
          *
          * @param context An application context.
          * @param apiKey The API key generated from the Birch dashboard.
+         * @param publicKey Base64 encoded PEM format RSA public key. Pull from Birch dashboard.
+         */
+        @JvmStatic
+        fun init(
+            context: Context,
+            apiKey: String,
+            publicKey: String?
+        ) {
+            init(context, apiKey, publicKey, listOf(PasswordScrubber(), EmailScrubber()))
+        }
+
+        /**
+         * Initialize the Birch library with an application context and an API key generated
+         * from the Birch dashboard. This must be the first call to the logger.
+         *
+         * @param context An application context.
+         * @param apiKey The API key generated from the Birch dashboard.
+         * @param publicKey Base64 encoded PEM format RSA public key. Pull from Birch dashboard.
          * @param scrubbers The list of scrubbers to be used.
          */
         @JvmStatic
         fun init(
             context: Context,
             apiKey: String,
-            scrubbers: List<Scrubber>
+            publicKey: String?,
+            scrubbers: List<Scrubber>,
         ) {
             if (engine == null) {
+                val encryption: Encryption? = if (publicKey != null) {
+                    Encryption.create(publicKey)
+                } else {
+                    null
+                }
+
                 val appContext = context.applicationContext
                 val eventBus = EventBus()
                 val storage = Storage(appContext)
                 val source = Source(appContext, storage, eventBus)
-                val logger = Logger(appContext, storage)
+                val logger = Logger(appContext, storage, encryption)
                 val network = Network(apiKey)
 
                 engine = Engine(
@@ -108,6 +133,8 @@ class Birch private constructor() {
                 ).also {
                     it.start()
                 }
+            } else {
+                w { "[Birch] Ignored duplicate init() call" }
             }
         }
 
@@ -275,4 +302,6 @@ class Birch private constructor() {
             engine?.log(Logger.Level.ERROR, block)
         }
     }
+
+    class InvalidPublicKeyException(message: String): RuntimeException(message)
 }
