@@ -45,7 +45,6 @@ internal class Logger(
     val directory = File(context.filesDir, DIRECTORY)
 
     private var currentFile = File(directory, "current")
-    private var fileWriter: FileWriter? = null
 
     init {
         directory.mkdirs()
@@ -54,12 +53,10 @@ internal class Logger(
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
         if (diskAvailable() && (level >= this.level || Birch.debug)) {
             executorService.execute {
-                safe {
-                    ensureCurrentFileExists()
+                val writer = FileWriter(currentFile, true)
 
-                    if (fileWriter == null) {
-                        fileWriter = FileWriter(currentFile, true)
-                    }
+                writer.use { fileWriter ->
+                    ensureCurrentFileExists()
 
                     val message = encryption?.let { e ->
                         JSONObject().also {
@@ -70,8 +67,7 @@ internal class Logger(
                         block()
                     }
 
-                    fileWriter?.write("$message,\n")
-                    fileWriter?.flush()
+                    fileWriter.write("$message,\n")
 
                     if (Birch.debug) {
                         when (level) {
@@ -109,13 +105,9 @@ internal class Logger(
                 Birch.d { "[Birch] Rolled file to $timestamp" }
             }
 
-            fileWriter?.close()
             currentFile.renameTo(rollTo)
-
             currentFile = File(directory, "current")
             currentFile.createNewFile()
-
-            fileWriter = FileWriter(currentFile, true)
         }
 
         if (isLoggerThread()) {
