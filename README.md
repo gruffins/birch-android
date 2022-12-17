@@ -137,7 +137,7 @@ class YourScrubber: Scrubber {
 ```
 
 ```kotlin
-Birch.init(this, "api_key", listOf(PasswordScrubber(), EmailScrubber(), YourScrubber()))
+Birch.init(this, "API_KEY", "YOUR_PUBLIC_ENCRYPTION_KEY", listOf(PasswordScrubber(), EmailScrubber(), YourScrubber()))
 ```
 
 # Timber
