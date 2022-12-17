@@ -53,9 +53,7 @@ internal class Logger(
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
         if (diskAvailable() && (level >= this.level || Birch.debug)) {
             executorService.execute {
-                val writer = FileWriter(currentFile, true)
-
-                writer.use { fileWriter ->
+                FileWriter(currentFile, true).use { fileWriter ->
                     ensureCurrentFileExists()
 
                     val message = encryption?.let { e ->
