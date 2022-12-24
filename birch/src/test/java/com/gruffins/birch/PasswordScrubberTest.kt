@@ -32,4 +32,16 @@ class PasswordScrubberTest {
         val input = "https://birch.ryanfung.com/auth?username=test123&password=password123"
         assert(scrubber.scrub(input) == "https://birch.ryanfung.com/auth?username=test123&password=[FILTERED]")
     }
+
+    @Test
+    fun `scrub() works for json`() {
+        val input = "{\"password\":\"password123\"}"
+        assert(scrubber.scrub(input) == "{\"password\":\"[FILTERED]\"}")
+    }
+
+    @Test
+    fun `scrub() works for json with spacing`() {
+        val input = "{\"password\": \"password123\"}"
+        assert(scrubber.scrub(input) == "{\"password\": \"[FILTERED]\"}")
+    }
 }
