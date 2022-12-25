@@ -4,6 +4,7 @@ import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 class UtilsTest {
@@ -65,5 +66,16 @@ class UtilsTest {
         }
 
         Utils.safe(block)
+    }
+
+    @Test
+    fun `compress() returns a byte array less than original`() {
+        val file = File("test.txt").also {
+            it.createNewFile()
+            it.writeBytes("test1234test1234".toByteArray())
+        }
+
+        assert(Utils.compress(file).isNotEmpty())
+        file.delete()
     }
 }
