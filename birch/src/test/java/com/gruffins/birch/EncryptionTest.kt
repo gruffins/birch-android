@@ -1,16 +1,13 @@
 package com.gruffins.birch
 
 import android.util.Base64
-import junit.framework.Assert.fail
+import junit.framework.TestCase.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
-import java.security.PrivateKey
-import java.security.spec.PKCS8EncodedKeySpec
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -69,6 +66,10 @@ class EncryptionTest {
     @Test
     fun `create() returns encryption for valid rsa public key`() {
         val publicKey = "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUE2aEVvZlV0VmY3dHhZMVZDNUhNSwpSVVpYRk1FNWN1V3lCTlJKZU1RRmlPK1NnWGlodGNESmx3VzhGeGJaQUlUTWF1azhzay9VTndTZlRXcWcxOXVqCkNrdklkaVVqaWdjSmQyQWZJd0pIWlRJUWRkUjh3dnhzSnNTYTJyVnl4ZUxNZ0VWNExXZGx5Q0l4VUJBWURlSy8KUWZScGJlT21xdmVBMGNDNlVGc2R4R1F0NEJiWVp2YjMycVlEU1c1OExMMXRiQThpN002dE5wZXpaY1JtOVhIWAo1c1dDNDc2RmRGRjhQVWU5a0RRSFpEc3cxK0dWM0RGeW9JWmE1WklSWmFuYkhxY2plRTlLWXgxclNHa1VkT3dhCncwb1piODZQUzlJT2E3cjNHNGxpaDZMdkRLRlAwamxvVHVqTFdUMzhBRzg3TzcrYTFXdHZjS2ZOUUt2OHU0S24KZXdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
-        assert(Encryption.create(publicKey) != null)
+        try {
+            Encryption.create(publicKey)
+        } catch(_: Exception) {
+            fail("Should not have thrown an exception")
+        }
     }
 }
