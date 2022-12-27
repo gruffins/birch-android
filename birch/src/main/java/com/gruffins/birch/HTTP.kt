@@ -37,8 +37,8 @@ internal open class HTTP {
         val connection = openConnection("POST", url, combinedHeaders)
         val os = DataOutputStream(connection.outputStream)
         os.writeBytes("--$boundary$LINE")
-        os.writeBytes("Content-Disposition: form-data; name=\"logs\"; filename=\"${file.name}\"$LINE$LINE")
-        os.write(file.readBytes())
+        os.writeBytes("Content-Disposition: form-data; name=\"logs\"; filename=\"${file.name}.gz\"$LINE$LINE")
+        os.write(Utils.compress(file))
         os.writeBytes("--$boundary--$LINE")
         os.flush()
 

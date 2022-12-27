@@ -4,11 +4,14 @@ import android.os.Build
 import android.util.Base64
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.zip.GZIPOutputStream
 
 internal class Utils private constructor() {
     companion object {
@@ -72,6 +75,14 @@ internal class Utils private constructor() {
                     Birch.e { "[Birch] $ex" }
                 }
             }
+        }
+
+        fun compress(file: File): ByteArray {
+            val output = ByteArrayOutputStream()
+            GZIPOutputStream(output).bufferedWriter().use {
+                it.write(file.readText())
+            }
+            return output.toByteArray()
         }
     }
 }
