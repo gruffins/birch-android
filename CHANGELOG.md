@@ -1,5 +1,10 @@
 # Changes
 
+1.3.0
+----------
+- Adds GZIP compression.
+- Improve password scrubber for JSON.
+
 1.2.1
 ----------
 - Fixes incomplete log lines under certain edge cases.
