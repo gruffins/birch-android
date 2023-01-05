@@ -11,6 +11,7 @@ import java.lang.System.currentTimeMillis
 import java.lang.Thread.currentThread
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * The logger is responsible for writing to the current file and rolling the file when necessary.
@@ -52,7 +53,7 @@ internal class Logger(
 
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
         if (diskAvailable() && (level >= this.level || Birch.debug)) {
-            executorService.execute {
+            executorService.submit {
                 FileWriter(currentFile, true).use { fileWriter ->
                     ensureCurrentFileExists()
 
@@ -82,7 +83,12 @@ internal class Logger(
                         rollFile()
                     }
                 }
+            }.also {
+                if (Birch.debug) {
+                    safe { it.get(5, TimeUnit.SECONDS) }
+                }
             }
+
             return true
         }
         return false
@@ -98,10 +104,6 @@ internal class Logger(
 
             val timestamp = currentTimeMillis().toString()
             val rollTo = File(directory, timestamp)
-
-            if (Birch.debug) {
-                Birch.d { "[Birch] Rolled file to $timestamp" }
-            }
 
             currentFile.renameTo(rollTo)
             currentFile = File(directory, "current")
