@@ -11,6 +11,19 @@ Simple, lightweight remote logging for Android.
 
 Sign up for your free account at [Birch](https://birch.ryanfung.com).
 
+Birch allows you to log to a variety of drains regardless of whether they have a native implementation or not. On top of that, Birch provides the ability to remotely adjust log configurations on any of your apps in production.
+
+Birch can drain to
+- New Relic
+- Datadog
+- Logtail
+- Loggly
+- Elasticsearch
+- Papertrail
+- Logz
+- CloudWatch
+- A custom webhook
+
 # Installation
 
 Add jitpack to your project build.gradle.
