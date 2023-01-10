@@ -40,6 +40,7 @@ class LoggerTest {
         Birch.remote = true
         Birch.console = false
         Birch.level = null
+        Birch.synchronous = false
         ShadowStatFs.reset()
     }
 
@@ -132,6 +133,14 @@ class LoggerTest {
         logger.level = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
+        assert(currentFile.readText().isNotBlank())
+    }
+
+    @Test
+    fun `log() works synchronously`() {
+        logger.level = Level.TRACE
+        Birch.synchronous = true
+        logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.readText().isNotBlank())
     }
 }

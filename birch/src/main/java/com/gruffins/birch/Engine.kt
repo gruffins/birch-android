@@ -92,6 +92,9 @@ internal class Engine(
             logger.rollFile()
             logger.nonCurrentFiles()?.sorted()?.forEach {
                 if (it.length() == 0L) {
+                    if (Birch.debug) {
+                        Birch.d { "[Birch] Empty file ${it.name}." }
+                    }
                     it.delete()
                 } else {
                     network.uploadLogs(it) { success ->

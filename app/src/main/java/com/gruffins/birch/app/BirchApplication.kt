@@ -10,6 +10,5 @@ class BirchApplication: Application() {
 
         Birch.host = BuildConfig.BIRCH_HOST
         Birch.init(this, BuildConfig.BIRCH_API_KEY)
-        Birch.debug = BuildConfig.DEBUG
     }
 }
