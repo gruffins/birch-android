@@ -26,14 +26,17 @@ internal class Source(
 
     var identifier: String? by Delegates.observable(storage.identifier) { _, _, newValue ->
         storage.identifier = newValue
-
+        cache = null
         eventBus.publish(EventBus.Event.SourceUpdated(this@Source))
     }
+
     var customProperties: Map<String, String>? by Delegates.observable(storage.customProperties) { _, _, newValue ->
         storage.customProperties = newValue
-
+        cache = null
         eventBus.publish(EventBus.Event.SourceUpdated(this@Source))
     }
+
+    private var cache: JSONObject? = null
 
     init {
         val manager = context.packageManager
@@ -53,21 +56,22 @@ internal class Source(
     }
 
     fun toJson(): JSONObject {
-        return JSONObject().also { json ->
-            json.put("uuid", uuid)
-            json.put("package_name", packageName)
-            json.put("app_version", appVersion)
-            json.put("app_build_number", appBuildNumber)
-            json.put("brand", brand)
-            json.put("manufacturer", manufacturer)
-            json.put("model", model)
-            json.put("os", os)
-            json.put("os_version", osVersion)
-            json.put("identifier", identifier)
+       return cache ?: JSONObject().also { json ->
+           json.put("uuid", uuid)
+           json.put("package_name", packageName)
+           json.put("app_version", appVersion)
+           json.put("app_build_number", appBuildNumber)
+           json.put("brand", brand)
+           json.put("manufacturer", manufacturer)
+           json.put("model", model)
+           json.put("os", os)
+           json.put("os_version", osVersion)
+           json.put("identifier", identifier)
 
-            customProperties?.forEach { entry ->
-                json.put("custom_property__${entry.key}", entry.value)
-            }
-        }
+           customProperties?.forEach { entry ->
+               json.put("custom_property__${entry.key}", entry.value)
+           }
+           cache = json
+       }
     }
 }
