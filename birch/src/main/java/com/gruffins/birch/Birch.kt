@@ -67,6 +67,12 @@ class Birch private constructor() {
         var console: Boolean = false
 
         /**
+         * Set whether remote logging is enabled. Defaults to true.
+         */
+        @JvmStatic
+        var remote: Boolean = true
+
+        /**
          * Initialize the Birch library with an application context and an API key generated
          * from the Birch dashboard. This must be the first call to the logger.
          *

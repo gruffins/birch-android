@@ -37,6 +37,8 @@ class LoggerTest {
     fun teardown() {
         logger.directory.deleteRecursively()
         Birch.debug = false
+        Birch.remote = true
+        Birch.console = false
         ShadowStatFs.reset()
     }
 
@@ -114,5 +116,22 @@ class LoggerTest {
         val content = currentFile.readText()
         assert(!content.contains("em"))
         assert(!content.contains("ek"))
+    }
+
+    @Test
+    fun `log() without remote enabled does not write to file`() {
+        Birch.remote = false
+        logger.level = Logger.Level.TRACE
+        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+
+        assert(currentFile.readText().isBlank())
+    }
+
+    @Test
+    fun `log() with remote enabled writes to file`() {
+        logger.level = Logger.Level.TRACE
+        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+
+        assert(currentFile.readText().isNotBlank())
     }
 }
