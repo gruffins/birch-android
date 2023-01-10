@@ -78,6 +78,7 @@ class LoggerTest {
     @Test
     fun `log() with debug works at all levels`() {
         Birch.debug = true
+        Birch.console = true
 
         val block = mockk<() -> String>()
         every { block.invoke() } returns "test"
