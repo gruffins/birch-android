@@ -67,7 +67,7 @@ internal class Logger(
 
                     fileWriter.write("$message,\n")
 
-                    if (Birch.debug) {
+                    if (Birch.console) {
                         when (level) {
                             Level.TRACE -> Log.v("Birch", original())
                             Level.DEBUG -> Log.d("Birch", original())
