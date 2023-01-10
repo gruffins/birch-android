@@ -74,7 +74,7 @@ class SourceTest {
     }
 
     @Test
-    fun `toJson serializes correctly`() {
+    fun `toJson() serializes correctly`() {
         source.identifier = "identifier"
         source.customProperties = mapOf("key" to "value")
         val json = source.toJson()
@@ -89,5 +89,11 @@ class SourceTest {
         assert(json.getString("identifier") == source.identifier)
         assert(json.getString("package_name") == source.packageName)
         assert(json.getString("custom_property__key") == "value")
+    }
+
+    @Test
+    fun `toJson() is cached`() {
+        val json = source.toJson()
+        assert(json === source.toJson())
     }
 }
