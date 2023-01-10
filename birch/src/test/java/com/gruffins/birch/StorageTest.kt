@@ -26,7 +26,7 @@ class StorageTest {
 
     @Test
     fun `logLevel() has valid getter and setter`() {
-        val level = Logger.Level.DEBUG
+        val level = Level.DEBUG
         storage.logLevel = level
         assert(storage.logLevel == level)
     }

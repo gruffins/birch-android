@@ -67,19 +67,19 @@ class EngineTest {
 
     @Test
     fun `log() forwards to the logger`() {
-        engine.log(Logger.Level.TRACE) { "test" }
-        verify { logger.log(Logger.Level.TRACE, any(), any()) }
+        engine.log(Level.TRACE) { "test" }
+        verify { logger.log(Level.TRACE, any(), any()) }
     }
 
     @Test
     fun `log() returns true if not opted out`() {
-        assert(engine.log(Logger.Level.TRACE) { "test" })
+        assert(engine.log(Level.TRACE) { "test" })
     }
 
     @Test
     fun `log() returns false if opted out`() {
         Birch.optOut = true
-        assert(!engine.log(Logger.Level.TRACE) { "test" })
+        assert(!engine.log(Level.TRACE) { "test" })
     }
 
     @Test
@@ -90,7 +90,7 @@ class EngineTest {
         every { source.toJson() } returns JSONObject()
         every { logger.log(any(), capture(jsonBlock), capture(block)) } returns true
 
-        engine.log(Logger.Level.TRACE) { "https://birch.ryanfung.com/?email=asdf+fdsa@domain.com&password=password123" }
+        engine.log(Level.TRACE) { "https://birch.ryanfung.com/?email=asdf+fdsa@domain.com&password=password123" }
 
         assert(block.captured.invoke() == "https://birch.ryanfung.com/?email=[FILTERED]&password=[FILTERED]")
         assert(jsonBlock.captured.invoke().contains("?email=[FILTERED]&password=[FILTERED]"))
@@ -182,7 +182,7 @@ class EngineTest {
 
     @Test
     fun `syncConfiguration() sets the log level on storage, level on logger and flush period on storage`() {
-        val level = Logger.Level.TRACE
+        val level = Level.TRACE
         val flushPeriod = 1L
         every { network.getConfiguration(source, any()) } answers {
             val json = JSONObject().also {

@@ -32,8 +32,8 @@ internal class Storage(
             }
         }
 
-    var logLevel: Logger.Level
-        get() = Logger.Level.fromInt(sharedPreferences.getInt("log_level", Logger.Level.ERROR.level))
+    var logLevel: Level
+        get() = Level.fromInt(sharedPreferences.getInt("log_level", Level.ERROR.level))
         set(value) {
             sharedPreferences.edit().putInt("log_level", value.level).apply()
         }

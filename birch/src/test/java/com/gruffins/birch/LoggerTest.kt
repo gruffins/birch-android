@@ -39,29 +39,29 @@ class LoggerTest {
         Birch.debug = false
         Birch.remote = true
         Birch.console = false
+        Birch.level = null
         ShadowStatFs.reset()
     }
 
     @Test
-    fun `debug mode logs any level`() {
-        Birch.debug = true
-
-        logger.level = Logger.Level.NONE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+    fun `Birch#level() overrides server configuration`() {
+        Birch.level = Level.TRACE
+        logger.level = Level.NONE
+        logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.exists())
     }
 
     @Test
     fun `logger skips logs lower than the current log level`() {
-        logger.level = Logger.Level.NONE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.NONE
+        logger.log(Level.TRACE, { "a" }, { "a" })
         assert(!currentFile.exists())
     }
 
     @Test
     fun `logger does not skip logs higher than the current log level`() {
-        logger.level = Logger.Level.TRACE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.TRACE
+        logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.exists())
     }
 
@@ -74,23 +74,23 @@ class LoggerTest {
     @Test
     fun `logger skips logging if disk is full`() {
         ShadowStatFs.registerStats(logger.directory, 1, 0, 0)
-        assert(!logger.log(Logger.Level.TRACE, { "a" }, { "a" }))
+        assert(!logger.log(Level.TRACE, { "a" }, { "a" }))
     }
 
     @Test
-    fun `log() with debug works at all levels`() {
-        Birch.debug = true
+    fun `log() with console works at all levels`() {
         Birch.console = true
+        logger.level = Level.TRACE
 
         val block = mockk<() -> String>()
         every { block.invoke() } returns "test"
 
-        logger.log(Logger.Level.TRACE, { "test" }, block)
-        logger.log(Logger.Level.DEBUG, { "test" }, block)
-        logger.log(Logger.Level.INFO, { "test" }, block)
-        logger.log(Logger.Level.WARN, { "test" }, block)
-        logger.log(Logger.Level.ERROR, { "test" }, block)
-        logger.log(Logger.Level.NONE, { "test" }, block)
+        logger.log(Level.TRACE, { "test" }, block)
+        logger.log(Level.DEBUG, { "test" }, block)
+        logger.log(Level.INFO, { "test" }, block)
+        logger.log(Level.WARN, { "test" }, block)
+        logger.log(Level.ERROR, { "test" }, block)
+        logger.log(Level.NONE, { "test" }, block)
 
         verify(exactly = 5) { block.invoke() }
     }
@@ -100,8 +100,8 @@ class LoggerTest {
         val keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
 
         logger = Logger(context, storage, Encryption(keyPair.public), TestExecutorService())
-        logger.level = Logger.Level.TRACE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.TRACE
+        logger.log(Level.TRACE, { "a" }, { "a" })
 
         val content = currentFile.readText()
         assert(content.contains("em"))
@@ -110,8 +110,8 @@ class LoggerTest {
 
     @Test
     fun `log() without encryption does not encrypt logs in the file`() {
-        logger.level = Logger.Level.TRACE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.TRACE
+        logger.log(Level.TRACE, { "a" }, { "a" })
 
         val content = currentFile.readText()
         assert(!content.contains("em"))
@@ -121,16 +121,16 @@ class LoggerTest {
     @Test
     fun `log() without remote enabled does not write to file`() {
         Birch.remote = false
-        logger.level = Logger.Level.TRACE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.TRACE
+        logger.log(Level.TRACE, { "a" }, { "a" })
 
         assert(currentFile.readText().isBlank())
     }
 
     @Test
     fun `log() with remote enabled writes to file`() {
-        logger.level = Logger.Level.TRACE
-        logger.log(Logger.Level.TRACE, { "a" }, { "a" })
+        logger.level = Level.TRACE
+        logger.log(Level.TRACE, { "a" }, { "a" })
 
         assert(currentFile.readText().isNotBlank())
     }

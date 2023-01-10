@@ -60,7 +60,7 @@ internal class Engine(
         }
     }
 
-    fun log(level: Logger.Level, message: () -> String): Boolean {
+    fun log(level: Level, message: () -> String): Boolean {
         if (Birch.optOut) {
             return false
         }
@@ -131,7 +131,7 @@ internal class Engine(
         }
 
         network.getConfiguration(source) {
-            val logLevel = Logger.Level.fromInt(it.optInt("log_level", Logger.Level.ERROR.level))
+            val logLevel = Level.fromInt(it.optInt("log_level", Level.ERROR.level))
             val period = it.optLong("flush_period_seconds", FLUSH_PERIOD_SECONDS)
 
             storage.logLevel = logLevel

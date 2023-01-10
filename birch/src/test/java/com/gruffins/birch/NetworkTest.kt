@@ -128,22 +128,22 @@ class NetworkTest {
                 200,
                 JSONObject().also { sc ->
                     sc.put("source_configuration", JSONObject().also {
-                        it.put("log_level", Logger.Level.WARN.level)
+                        it.put("log_level", Level.WARN.level)
                         it.put("flush_period_seconds", 1L)
                     })
                 }.toString()
             )
         )
 
-        var level: Logger.Level? = null
+        var level: Level? = null
         var period: Long? = null
 
         network.getConfiguration(source) {
-            level = Logger.Level.fromInt(it.getInt("log_level"))
+            level = Level.fromInt(it.getInt("log_level"))
             period = it.getLong("flush_period_seconds")
 
         }
-        assert(level == Logger.Level.WARN)
+        assert(level == Level.WARN)
         assert(period == 1L)
     }
 
