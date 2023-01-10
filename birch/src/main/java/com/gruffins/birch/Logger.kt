@@ -65,7 +65,9 @@ internal class Logger(
                         block()
                     }
 
-                    fileWriter.write("$message,\n")
+                    if (Birch.remote) {
+                        fileWriter.write("$message,\n")
+                    }
 
                     if (Birch.console) {
                         when (level) {
