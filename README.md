@@ -102,7 +102,7 @@ If the current log level is `INFO`, the log will not get constructed.
 Device level configuration is left to the server so you can remotely control it. There are a few things you can control on the client side.
 
 ### Console (Logcat)
-During local development, it is useful to see the logs in the console (Logcat). These console logs are not useful in production however since you cannot read remotely. The default is `false`.
+During local development, it is useful to see the logs in the console (Logcat). These console logs are not useful in production since you cannot read them remotely. The default is `false`.
 ```kotlin
 Birch.console = true
 ```
@@ -127,6 +127,9 @@ Birch.synchronous = true
 
 ### Debug
 When integrating the library, you may be curious to see the logger at work. By setting debug to true, Birch will log its operations and also flush logs every 30 seconds. The default value is `false`. You should **NOT** set this to true in a production build otherwise you will not be able to set the flush period remotely.
+```kotlin
+Birch.debug = true
+```
 
 ### Encryption
 
