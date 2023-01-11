@@ -12,8 +12,9 @@ class Birch private constructor() {
         internal var flushPeriod: Long? = null
 
         /**
-         * Sets the logger in debug mode. Logger is set to TRACE and uploading to 30 seconds.
-         * Be sure to disable this in a production build.
+         * Sets the logger in debug mode. This will log Birch operations and set the flush period to 30 seconds.
+         * This should be FALSE in a production build otherwise you will not be able to modify the settings
+         * remotely.
          */
         @JvmStatic
         var debug: Boolean by Delegates.observable(false) { _, _, newValue ->
@@ -61,22 +62,32 @@ class Birch private constructor() {
             set(value) { engine?.source?.customProperties = value }
 
         /**
-         * Set whether logging to console should be enabled. Defaults to false.
+         * Set whether logging to console should be enabled. Defaults to FALSE. This should be FALSE
+         * in a production build since you cannot read logcat remotely anyways.
          */
         @JvmStatic
         var console: Boolean = false
 
         /**
-         * Set whether remote logging is enabled. Defaults to true.
+         * Set whether remote logging is enabled. Defaults to TRUE. This should be TRUE in a production
+         * build so your logs are delivered to Birch.
          */
         @JvmStatic
         var remote: Boolean = true
 
         /**
-         * Override the level set by the server. Defaults to null.
+         * Override the level set by the server. Defaults to NULL. This should be NULL in a production
+         * build so you can remotely adjust the log level.
          */
         @JvmStatic
         var level: Level? = null
+
+        /**
+         * Whether to log synchronously or asynchronously. Defaults to FALSE. This should be FALSE in
+         * a production build.
+         */
+        @JvmStatic
+        var synchronous: Boolean = false
 
         /**
          * Initialize the Birch library with an application context and an API key generated

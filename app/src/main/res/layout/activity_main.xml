@@ -1,15 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
     android:orientation="vertical"
     android:layout_margin="8dp">
+
     <Button
         android:id="@+id/toggle_debug"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Toggle Debug" />
+        tools:text="Debug OFF" />
+
+    <Button
+        android:id="@+id/toggle_level"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Level TRACE" />
+
+    <Button
+        android:id="@+id/toggle_console"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Console ON" />
+
+    <Button
+        android:id="@+id/toggle_remote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Remote ON" />
+
+    <Button
+        android:id="@+id/toggle_synchronous"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        tools:text="Synchronous ON " />
 
     <Button
         android:id="@+id/trace"
@@ -39,6 +66,7 @@
         android:id="@+id/error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="Error" />
 
     <Button
