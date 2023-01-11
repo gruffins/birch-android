@@ -1,5 +1,13 @@
 # Changes
 
+1.4.0
+----------
+- Improve json serialization performance of source.
+- Add ability to toggle console logging.
+- Add ability to toggle remote logging.
+- Add ability to toggle synchronous logging.
+- Add ability to override log level locally.
+
 1.3.0
 ----------
 - Adds GZIP compression.
