@@ -59,6 +59,7 @@ class MyApp: Application() {
       Birch.synchronous = true // This makes the logger log synchronously. The default is false.
     }
 
+    // Birch.debug = true // This line MUST be removed after you've successfully integrated. It is only used to help you debug the integration if you're having issues.
     Birch.init(this, "YOUR_API_KEY", "YOUR_PUBLIC_ENCRYPTION_KEY")
     Birch.identifier = "your_user_id" // this is optional but highly recommended
   }
@@ -123,6 +124,9 @@ During local development, you may want logs to print immediately when you're ste
 ```kotlin
 Birch.synchronous = true
 ```
+
+### Debug
+When integrating the library, you may be curious to see the logger at work. By setting debug to true, Birch will log its operations and also flush logs every 30 seconds. The default value is `false`. You should **NOT** set this to true in a production build otherwise you will not be able to set the flush period remotely.
 
 ### Encryption
 
