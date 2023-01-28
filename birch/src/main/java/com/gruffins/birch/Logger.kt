@@ -3,7 +3,7 @@ package com.gruffins.birch
 import android.content.Context
 import android.os.StatFs
 import android.util.Log
-import com.gruffins.birch.Utils.Companion.safe
+import com.gruffins.birch.Utils.safe
 import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
@@ -20,17 +20,17 @@ import java.util.concurrent.TimeUnit
 internal class Logger(
     context: Context,
     storage: Storage,
+    private val agent: Agent,
     private val encryption: Encryption?,
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor { r -> Thread(r, THREAD_NAME) }
 ) {
     companion object {
         const val THREAD_NAME = "Birch-Logger"
-        const val DIRECTORY = "birch"
         const val MAX_FILE_SIZE_BYTES = 1024 * 512 * 1
     }
 
     var level: Level = storage.logLevel
-    val directory = File(context.filesDir, DIRECTORY)
+    val directory = File(context.filesDir, agent.directory)
 
     private var currentFile = File(directory, "current")
 
@@ -39,7 +39,8 @@ internal class Logger(
     }
 
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
-        if (diskAvailable() && (level >= (Birch.level ?: this.level)))   {
+        val currentLevel = agent.level ?: this.level
+        if (diskAvailable() && level >= currentLevel)   {
             executorService.submit {
                 FileWriter(currentFile, true).use { fileWriter ->
                     ensureCurrentFileExists()
@@ -53,11 +54,11 @@ internal class Logger(
                         block()
                     }
 
-                    if (Birch.remote) {
+                    if (agent.remote) {
                         fileWriter.write("$message,\n")
                     }
 
-                    if (Birch.console) {
+                    if (agent.console) {
                         when (level) {
                             Level.TRACE -> Log.v("Birch", original())
                             Level.DEBUG -> Log.d("Birch", original())
@@ -73,11 +74,13 @@ internal class Logger(
                     }
                 }
             }.also {
-                if (Birch.synchronous) {
+                if (agent.synchronous) {
                     safe { it.get(5, TimeUnit.SECONDS) }
                 }
             }
             return true
+        } else if (agent.debug && agent.console) {
+            Log.d("Birch", "Dropped log. level=$level currentLevel=$currentLevel")
         }
         return false
     }

@@ -2,13 +2,15 @@ package com.gruffins.birch
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.gruffins.birch.Utils.Companion.mapToString
-import com.gruffins.birch.Utils.Companion.stringToMap
+import com.gruffins.birch.Utils.mapToString
+import com.gruffins.birch.Utils.stringToMap
 
 internal class Storage(
-    context: Context
+    context: Context,
+    directory: String,
+    private val defaultLevel: Level
 ) {
-    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("com.gruffins.birch", 0)
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("com.gruffins.$directory", 0)
 
     var uuid: String?
         get() = sharedPreferences.getString("uuid", null)
@@ -33,7 +35,7 @@ internal class Storage(
         }
 
     var logLevel: Level
-        get() = Level.fromInt(sharedPreferences.getInt("log_level", Level.ERROR.level))
+        get() = Level.fromInt(sharedPreferences.getInt("log_level", defaultLevel.level))
         set(value) {
             sharedPreferences.edit().putInt("log_level", value.level).apply()
         }

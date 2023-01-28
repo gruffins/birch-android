@@ -1,7 +1,7 @@
 package com.gruffins.birch
 
-import com.gruffins.birch.Utils.Companion.currentTimestamp
-import com.gruffins.birch.Utils.Companion.safe
+import com.gruffins.birch.Utils.currentTimestamp
+import com.gruffins.birch.Utils.safe
 import org.json.JSONObject
 import java.lang.System.currentTimeMillis
 import java.util.concurrent.ScheduledExecutorService
@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 internal class Engine(
+    private val agent: Agent,
     val source: Source,
     private val logger: Logger,
     private val storage: Storage,
@@ -32,10 +33,8 @@ internal class Engine(
     private val futures: MutableMap<FutureType, ScheduledFuture<*>> = mutableMapOf()
     private var isStarted = false
     private var flushPeriod: Long by Delegates.observable(storage.flushPeriod) { _, _, newValue ->
-        val period = Birch.flushPeriod ?: newValue
-
         futures[FutureType.FLUSH]?.cancel(false)
-        futures[FutureType.FLUSH] = executorService.scheduleAtFixedRate(this::flush, 0, period, TimeUnit.SECONDS)
+        futures[FutureType.FLUSH] = executorService.scheduleAtFixedRate(this::flush, 0, newValue, TimeUnit.SECONDS)
     }
 
     init {
@@ -61,7 +60,7 @@ internal class Engine(
     }
 
     fun log(level: Level, message: () -> String): Boolean {
-        if (Birch.optOut) {
+        if (agent.optOut) {
             return false
         }
 
@@ -84,7 +83,7 @@ internal class Engine(
     }
 
     fun flushSynchronous(): Boolean {
-        if (Birch.optOut) {
+        if (agent.optOut) {
             return false
         }
 
@@ -92,15 +91,15 @@ internal class Engine(
             logger.rollFile()
             logger.nonCurrentFiles()?.sorted()?.forEach {
                 if (it.length() == 0L) {
-                    if (Birch.debug) {
-                        Birch.d { "[Birch] Empty file ${it.name}." }
+                    if (agent.debug) {
+                        agent.d { "[Birch] Empty file ${it.name}." }
                     }
                     it.delete()
                 } else {
                     network.uploadLogs(it) { success ->
                         if (success) {
-                            if (Birch.debug) {
-                                Birch.d { "[Birch] Removing file ${it.name}."}
+                            if (agent.debug) {
+                                agent.d { "[Birch] Removing file ${it.name}."}
                             }
                             it.delete()
                         }
@@ -116,7 +115,7 @@ internal class Engine(
     }
 
     fun updateSourceSynchronous(source: Source): Boolean {
-        if (Birch.optOut) {
+        if (agent.optOut) {
             return false
         }
 
@@ -129,7 +128,7 @@ internal class Engine(
     }
 
     fun syncConfigurationSynchronous(): Boolean {
-        if (Birch.optOut) {
+        if (agent.optOut) {
             return false
         }
 
@@ -142,6 +141,8 @@ internal class Engine(
             storage.flushPeriod = period
 
             flushPeriod = period
+
+            agent.d { "[Birch] Remote log level set to $logLevel. Remote flush period set to $period." }
         }
         return true
     }

@@ -17,6 +17,7 @@ class MainActivity: Activity() {
     lateinit var toggleConsoleButton: Button
     lateinit var toggleRemoteButton: Button
     lateinit var toggleSynchronousButton: Button
+    lateinit var syncConfigurationButton: Button
     lateinit var traceButton: Button
     lateinit var debugButton: Button
     lateinit var infoButton: Button
@@ -35,6 +36,7 @@ class MainActivity: Activity() {
         toggleConsoleButton = findViewById(R.id.toggle_console)
         toggleRemoteButton = findViewById(R.id.toggle_remote)
         toggleSynchronousButton = findViewById(R.id.toggle_synchronous)
+        syncConfigurationButton = findViewById(R.id.sync_configuration)
         traceButton = findViewById(R.id.trace)
         debugButton = findViewById(R.id.debug)
         infoButton = findViewById(R.id.info)
@@ -47,6 +49,7 @@ class MainActivity: Activity() {
         toggleConsoleButton.setOnClickListener(this::toggleConsole)
         toggleRemoteButton.setOnClickListener(this::toggleRemote)
         toggleSynchronousButton.setOnClickListener(this::toggleSynchronous)
+        syncConfigurationButton.setOnClickListener(this::syncConfiguration)
         traceButton.setOnClickListener(this::trace)
         debugButton.setOnClickListener(this::debug)
         infoButton.setOnClickListener(this::info)
@@ -55,6 +58,10 @@ class MainActivity: Activity() {
         stressTestButton.setOnClickListener(this::stressTest)
 
         setState()
+    }
+
+    private fun syncConfiguration(_view: View) {
+        Birch.syncConfiguration()
     }
 
     private fun toggleDebug(_view: View) {

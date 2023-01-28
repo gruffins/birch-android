@@ -39,6 +39,13 @@
         tools:text="Synchronous ON " />
 
     <Button
+        android:id="@+id/sync_configuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Sync Configuration" />
+
+    <Button
         android:id="@+id/trace"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

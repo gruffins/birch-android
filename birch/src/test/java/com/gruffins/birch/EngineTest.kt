@@ -5,7 +5,6 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.json.JSONObject
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,6 +17,8 @@ import java.util.concurrent.TimeUnit
 @RunWith(RobolectricTestRunner::class)
 @MockKExtension.ConfirmVerification
 class EngineTest {
+
+    private lateinit var agent: Agent
 
     @MockK(relaxed = true)
     private lateinit var source: Source
@@ -43,14 +44,22 @@ class EngineTest {
         MockKAnnotations.init(this)
 
         context = RuntimeEnvironment.getApplication()
+        agent = Agent("birch").also {
+            it.debug = true
+        }
         eventBus = EventBus()
-        engine = spyk(Engine(source, logger, storage, network, executor, eventBus, listOf(PasswordScrubber(), EmailScrubber())))
-    }
-
-    @After
-    fun teardown() {
-        Birch.optOut = false
-        Birch.debug = false
+        engine = spyk(
+            Engine(
+                agent,
+                source,
+                logger,
+                storage,
+                network,
+                executor,
+                eventBus,
+                listOf(PasswordScrubber(), EmailScrubber())
+            )
+        )
     }
 
     @Test
@@ -78,7 +87,7 @@ class EngineTest {
 
     @Test
     fun `log() returns false if opted out`() {
-        Birch.optOut = true
+        agent.optOut = true
         assert(!engine.log(Level.TRACE) { "test" })
     }
 
@@ -140,7 +149,7 @@ class EngineTest {
 
     @Test
     fun `flush() returns false if opted out`() {
-        Birch.optOut = true
+        agent.optOut = true
         assert(!engine.flushSynchronous())
     }
 
@@ -170,7 +179,7 @@ class EngineTest {
 
     @Test
     fun `updateSource() returns false if opted out`() {
-        Birch.optOut = true
+        agent.optOut = true
         assert(!engine.updateSourceSynchronous(source))
     }
 
@@ -215,13 +224,13 @@ class EngineTest {
 
     @Test
     fun `syncConfiguration() returns false if opted out`() {
-        Birch.optOut = true
+        agent.optOut = true
         assert(!engine.syncConfigurationSynchronous())
     }
 
     @Test
     fun `trimFiles removes old files`() {
-        val directory = File(context.filesDir, Logger.DIRECTORY).also { it.mkdirs() }
+        val directory = File(context.filesDir, agent.directory).also { it.mkdirs() }
         val file = File(directory, System.currentTimeMillis().toString()).also { it.createNewFile() }
         val timestamp = System.currentTimeMillis() + Engine.MAX_FILE_AGE_SECONDS * 1000L + 1L
 
