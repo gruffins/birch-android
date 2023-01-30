@@ -22,7 +22,6 @@ class AgentTest {
         }
         engine = spyk(agent.engine!!)
         agent.engine = engine
-
     }
 
     @Test

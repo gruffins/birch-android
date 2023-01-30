@@ -29,6 +29,18 @@ class BirchTest {
     }
 
     @Test
+    fun `debug() gets and sets`() {
+        Birch.debug = true
+        assert(Birch.debug)
+    }
+
+    @Test
+    fun `optOut() gets and sets`() {
+        Birch.optOut = true
+        assert(Birch.optOut)
+    }
+
+    @Test
     fun `uuid() returns a uuid`() {
         assert(Birch.uuid != null)
     }
@@ -45,6 +57,29 @@ class BirchTest {
         assert(Birch.customProperties["key"] == "value")
     }
 
+    @Test
+    fun `console() gets and sets`() {
+        Birch.console = true
+        assert(Birch.console)
+    }
+
+    @Test
+    fun `remote() gets and sets`() {
+        Birch.remote = true
+        assert(Birch.remote)
+    }
+
+    @Test
+    fun `level() gets and sets`() {
+        Birch.level = Level.TRACE
+        assert(Birch.level == Level.TRACE)
+    }
+
+    @Test
+    fun `synchronous() gets and sets`() {
+        Birch.synchronous = true
+        assert(Birch.synchronous)
+    }
     @Test
     fun `syncConfiguration() syncs`() {
         Birch.syncConfiguration()
