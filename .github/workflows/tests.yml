@@ -21,3 +21,5 @@ jobs:
           echo "birch.apiKey=apiKey" > local.properties
           ./gradlew birch:coverageReport
       - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
