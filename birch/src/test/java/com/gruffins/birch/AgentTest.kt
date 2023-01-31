@@ -1,7 +1,10 @@
 package com.gruffins.birch
 
+import io.mockk.every
+import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
+import org.junit.After
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -15,6 +18,8 @@ class AgentTest {
     private lateinit var engine: Engine
     private lateinit var agent: Agent
 
+    private var block = slot<() -> String>()
+
     @Before
     fun setup() {
         agent = Agent("birch").also {
@@ -22,6 +27,15 @@ class AgentTest {
         }
         engine = spyk(agent.engine!!)
         agent.engine = engine
+
+        every { engine.log(any(), capture(block)) } returns true
+    }
+
+    @After
+    fun teardown() {
+        if (block.isCaptured) {
+            block.captured.invoke()
+        }
     }
 
     @Test
@@ -30,14 +44,14 @@ class AgentTest {
     }
 
     @Test
-    fun `get and set identifier`() {
+    fun `identifer() gets and sets`() {
         val value = "identifier"
         agent.identifier = value
         assert(agent.identifier == value)
     }
 
     @Test
-    fun `get and set custom properties`() {
+    fun `customProperties() gets and sets`() {
         val value = mapOf("key" to "value")
         agent.customProperties = value
         assert(agent.customProperties["key"] == "value")
@@ -52,6 +66,16 @@ class AgentTest {
             return
         }
         fail("Should have raised exception")
+    }
+
+    @Test
+    fun `init() twice doesnt crash`() {
+        try {
+            agent.init(RuntimeEnvironment.getApplication(), "api_key")
+            agent.init(RuntimeEnvironment.getApplication(), "api_key")
+        } catch (ex: Exception) {
+            fail("Should not throw exception")
+        }
     }
 
     @Test
