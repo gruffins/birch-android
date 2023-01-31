@@ -23,6 +23,7 @@ Birch can drain to
 - Logz
 - CloudWatch
 - S3
+- Wasabi
 - A custom webhook
 
 # Installation
