@@ -60,7 +60,7 @@ class MyApp: Application() {
       Birch.synchronous = true // This makes the logger log synchronously. The default is false.
     }
 
-    Birch.debug = true // This line MUST be removed after you've successfully integrated. It is only used to help you debug the integration if you're having issues.
+    Birch.debug = true // This line should be removed after you've successfully integrated.
     Birch.init(this, "YOUR_API_KEY", "YOUR_PUBLIC_ENCRYPTION_KEY")
     Birch.identifier = "your_user_id" // this is optional but highly recommended
   }
