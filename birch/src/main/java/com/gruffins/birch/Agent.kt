@@ -113,7 +113,7 @@ class Agent(
     }
 
     /**
-     * Force agent to synchronous device configuration.
+     * Force agent to synchronize device configuration.
      */
     fun syncConfiguration() {
         engine?.syncConfiguration()

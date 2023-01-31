@@ -106,7 +106,7 @@ object Birch {
     }
 
     /**
-     * Force agent to synchronous device configuration.
+     * Force agent to synchronize device configuration.
      */
     @JvmStatic
     fun syncConfiguration() {
