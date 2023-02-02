@@ -7,6 +7,9 @@ on:
 
 jobs:
   specs:
+    strategy:
+      matrix:
+        version: [30, 29, 28, 27, 26]
     name: Specs
     runs-on: ubuntu-latest
     steps:
@@ -19,6 +22,7 @@ jobs:
       - name: Specs
         run: |
           echo "birch.apiKey=apiKey" > local.properties
+          echo "sdk=${{ matrix.version }}" > birch/src/test/resources/com/gruffins/birch/robolectric.properties
           ./gradlew birch:coverageReport
       - uses: codecov/codecov-action@v3
         with:
