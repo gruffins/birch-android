@@ -21,6 +21,7 @@ jobs:
       - uses: gradle/gradle-build-action@v2
       - name: Specs
         run: |
+          mkdir -p birch/src/test/resources/com/gruffins/birch
           echo "birch.apiKey=apiKey" > local.properties
           echo "sdk=${{ matrix.version }}" > birch/src/test/resources/com/gruffins/birch/robolectric.properties
           ./gradlew birch:coverageReport
