@@ -2,8 +2,7 @@ package com.gruffins.birch
 
 import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.After
 import org.junit.Before
@@ -80,8 +79,7 @@ class LoggerTest {
         agent.console = true
         logger.level = Level.TRACE
 
-        val block = mockk<() -> String>()
-        every { block.invoke() } returns "test"
+        val block = spyk({ "test" })
 
         logger.log(Level.TRACE, { "test" }, block)
         logger.log(Level.DEBUG, { "test" }, block)
