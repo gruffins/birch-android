@@ -9,9 +9,7 @@ class Agent(
     internal var engine: Engine? = null
 
     /**
-     * Sets the logger in debug mode.
-     * This should be FALSE in a production build otherwise you will not be able to modify the settings
-     * remotely.
+     * Sets the logger in debug mode. This should be FALSE in a production build.
      */
     var debug: Boolean = false
 
@@ -72,7 +70,7 @@ class Agent(
      * @param context An application context.
      * @param apiKey The API key generated from the Birch dashboard.
      * @param publicKey Base64 encoded PEM format RSA public key. Pull from Birch dashboard.
-     * @param options Additional options to configure
+     * @param options Additional options to configure.
      */
     @JvmOverloads
     fun init(
