@@ -127,7 +127,7 @@ Birch.synchronous = true
 ```
 
 ### Debug
-When integrating the library, you may be curious to see the logger at work. By setting debug to true, Birch will log its operations. The default value is `false`. You should **NOT** set this to true in a production build otherwise you will not be able to set the flush period remotely.
+When integrating the library, you may be curious to see the logger at work. By setting debug to true, Birch will log its operations. The default value is `false`. You should **NOT** set this to true in a production build.
 ```kotlin
 Birch.debug = true
 ```
