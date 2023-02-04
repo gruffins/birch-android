@@ -1,5 +1,11 @@
 # Changes
 
+1.5.0
+----------
+- Add ability to force config synchronization.
+- Add multi agent support.
+- Add additional debug logging.
+
 1.4.0
 ----------
 - Improve json serialization performance of source.
