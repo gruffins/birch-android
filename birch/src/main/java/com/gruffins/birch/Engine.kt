@@ -142,7 +142,9 @@ internal class Engine(
 
             flushPeriod = period
 
-            agent.d { "[Birch] Remote log level set to $logLevel. Remote flush period set to $period." }
+            if (agent.debug) {
+                agent.d { "[Birch] Remote log level set to $logLevel. Remote flush period set to $period." }
+            }
         }
         return true
     }
