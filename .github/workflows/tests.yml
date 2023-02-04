@@ -7,6 +7,12 @@ on:
 
 jobs:
   specs:
+    strategy:
+      matrix:
+        version:
+          - '30,29,28,27'
+          - '26,25,24,23,22'
+          - '21,19,18,17,16'
     name: Specs
     runs-on: ubuntu-latest
     steps:
@@ -18,6 +24,10 @@ jobs:
       - uses: gradle/gradle-build-action@v2
       - name: Specs
         run: |
+          mkdir -p birch/src/test/resources/com/gruffins/birch
           echo "birch.apiKey=apiKey" > local.properties
+          echo "sdk=${{ matrix.version }}" > birch/src/test/resources/com/gruffins/birch/robolectric.properties
           ./gradlew birch:coverageReport
       - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

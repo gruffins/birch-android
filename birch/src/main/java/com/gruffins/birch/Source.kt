@@ -3,7 +3,7 @@ package com.gruffins.birch
 import android.content.Context
 import android.os.Build
 import android.os.Build.VERSION_CODES
-import com.gruffins.birch.Utils.Companion.hasOSVersion
+import com.gruffins.birch.Utils.hasOSVersion
 import org.json.JSONObject
 import java.util.*
 import kotlin.properties.Delegates

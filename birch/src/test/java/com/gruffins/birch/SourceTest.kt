@@ -16,7 +16,7 @@ class SourceTest {
 
     @Before
     fun setup() {
-        storage = Storage(RuntimeEnvironment.getApplication())
+        storage = Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR)
         eventBus = EventBus()
         source = Source(RuntimeEnvironment.getApplication(), storage, eventBus)
     }

@@ -1,87 +1,67 @@
 package com.gruffins.birch
 
 import android.content.Context
+import java.util.concurrent.Executors
 
-object Birch {
-    class InvalidPublicKeyException(message: String): RuntimeException(message)
-
-    internal var agent = Agent("birch")
+class Agent(
+    val directory: String
+) {
+    internal var engine: Engine? = null
 
     /**
      * Sets the logger in debug mode. This should be FALSE in a production build.
      */
-    @JvmStatic
-    var debug: Boolean
-        get() = agent.debug
-        set(value) { agent.debug = value }
+    var debug: Boolean = false
 
     /**
      * Sets the logger to opt out. This disables logs collection and source synchronization.
      */
-    @JvmStatic
-    var optOut: Boolean
-        get() = agent.optOut
-        set(value) { agent.optOut = value}
+    var optOut: Boolean = false
 
     /**
      * The assigned UUID this source has been given. The UUID remains stable per install, it
      * does not persist across installs.
      */
-    @JvmStatic
-    val uuid: String? get() = agent.uuid
+    val uuid: String? get() = engine?.source?.uuid
 
     /**
      * An identifier such as a user_id that can be used on the Birch dashboard to locate
      * the source.
      */
-    @JvmStatic
     var identifier: String?
-        get() = agent.identifier
-        set(value) { agent.identifier = value }
+        get() = engine?.source?.identifier
+        set(value) { engine?.source?.identifier = value }
 
     /**
      * Additional properties of the source that should be appended to each log.
      */
-    @JvmStatic
     var customProperties: Map<String, String>
-        get() = agent.customProperties
-        set(value) { agent.customProperties = value }
+        get() = engine?.source?.customProperties ?: emptyMap()
+        set(value) { engine?.source?.customProperties = value }
 
     /**
      * Set whether logging to console should be enabled. Defaults to FALSE. This should be FALSE
      * in a production build since you cannot read logcat remotely anyways.
      */
-    @JvmStatic
-    var console: Boolean
-        get() = agent.console
-        set(value) { agent.console = value }
+    var console: Boolean = false
 
     /**
      * Set whether remote logging is enabled. Defaults to TRUE. This should be TRUE in a production
      * build so your logs are delivered to Birch.
      */
-    @JvmStatic
-    var remote: Boolean
-        get() = agent.remote
-        set(value) { agent.remote = value }
+    var remote: Boolean = true
 
     /**
      * Override the level set by the server. Defaults to NULL. This should be NULL in a production
      * build so you can remotely adjust the log level.
      */
-    @JvmStatic
-    var level: Level?
-        get() = agent.level
-        set(value) { agent.level = value }
+    var level: Level? = null
 
     /**
      * Whether to log synchronously or asynchronously. Defaults to FALSE. This should be FALSE in
      * a production build.
      */
-    @JvmStatic
-    var synchronous: Boolean
-        get() = agent.synchronous
-        set(value) { agent.synchronous = value }
+    var synchronous: Boolean = false
 
     /**
      * Initialize the Birch library with an application context and an API key generated
@@ -93,31 +73,56 @@ object Birch {
      * @param options Additional options to configure.
      */
     @JvmOverloads
-    @JvmStatic
     fun init(
         context: Context,
         apiKey: String,
         publicKey: String? = null,
         options: Options = Options()
     ) {
-        agent.init(context, apiKey, publicKey, options)
+        if (engine == null) {
+            val encryption: Encryption? = if (publicKey != null) {
+                Encryption.create(publicKey)
+            } else {
+                null
+            }
+
+            val appContext = context.applicationContext
+            val eventBus = EventBus()
+            val storage = Storage(appContext, directory, options.defaultLevel)
+            val source = Source(appContext, storage, eventBus)
+            val logger = Logger(appContext, storage, this, encryption)
+            val network = Network(this, options.host, apiKey)
+
+            engine = Engine(
+                this,
+                source,
+                logger,
+                storage,
+                network,
+                Executors.newScheduledThreadPool(1) { r -> Thread(r, "Birch-Engine") },
+                eventBus,
+                options.scrubbers
+            ).also {
+                it.start()
+            }
+        } else {
+            w { "[Birch] Ignored duplicate init() call" }
+        }
     }
 
     /**
      * Force agent to synchronize device configuration.
      */
-    @JvmStatic
     fun syncConfiguration() {
-        agent.syncConfiguration()
+        engine?.syncConfiguration()
     }
 
     /**
      * Force the agent to flush its logs. This will flush immediately rather than waiting
      * for the next upload period.
      */
-    @JvmStatic
     fun flush() {
-        agent.flush()
+        engine?.flush()
     }
 
     /**
@@ -125,9 +130,8 @@ object Birch {
      *
      * @param message The message to be logged.
      */
-    @JvmStatic
     fun t(message: String) {
-        agent.t(message)
+        engine?.log(Level.TRACE) { message }
     }
 
     /**
@@ -136,9 +140,8 @@ object Birch {
      * @param format A format string used for String.format().
      * @param args The arguments passed into String.format().
      */
-    @JvmStatic
     fun t(format: String, vararg args: Any?) {
-        agent.t(format, args)
+        engine?.log(Level.TRACE) { String.format(format, args) }
     }
 
      /**
@@ -146,9 +149,8 @@ object Birch {
      *
      * @param block A block returning the message to be logged.
      */
-     @JvmStatic
     fun t(block: () -> String) {
-        agent.t(block)
+        engine?.log(Level.TRACE, block)
     }
 
     /**
@@ -156,9 +158,8 @@ object Birch {
      *
      * @param message The message to be logged.
      */
-    @JvmStatic
     fun d(message: String) {
-        agent.d(message)
+        engine?.log(Level.DEBUG) { message }
     }
 
      /**
@@ -167,9 +168,8 @@ object Birch {
      * @param format A format string used for String.format().
      * @param args The arguments passed into String.format().
      */
-     @JvmStatic
     fun d(format: String, vararg args: Any?) {
-        agent.d(format, args)
+        engine?.log(Level.DEBUG) { String.format(format, args) }
     }
 
     /**
@@ -177,9 +177,8 @@ object Birch {
      *
      * @param block A block returning the message to be logged.
      */
-    @JvmStatic
     fun d(block: () -> String) {
-        agent.d(block)
+        engine?.log(Level.DEBUG, block)
     }
 
     /**
@@ -187,9 +186,8 @@ object Birch {
      *
      * @param message The message to be logged.
      */
-    @JvmStatic
     fun i(message: String) {
-        agent.i(message)
+        engine?.log(Level.INFO) { message }
     }
 
     /**
@@ -198,9 +196,8 @@ object Birch {
      * @param format A format string used for String.format().
      * @param args The arguments passed into String.format().
      */
-    @JvmStatic
     fun i(format: String, vararg args: Any?) {
-        agent.i(format, args)
+        engine?.log(Level.INFO) { String.format(format, args) }
     }
 
     /**
@@ -208,9 +205,8 @@ object Birch {
      *
      * @param block A block returning the message to be logged.
      */
-    @JvmStatic
     fun i(block: () -> String) {
-        agent.i(block)
+        engine?.log(Level.INFO, block)
     }
 
      /**
@@ -218,9 +214,8 @@ object Birch {
      *
      * @param message The message to be logged.
      */
-     @JvmStatic
     fun w(message: String) {
-        agent.w(message)
+        engine?.log(Level.WARN) { message }
     }
 
     /**
@@ -229,9 +224,8 @@ object Birch {
      * @param format A format string used for String.format().
      * @param args The arguments passed into String.format().
      */
-    @JvmStatic
     fun w(format: String, vararg args: Any?) {
-        agent.w(format, args)
+        engine?.log(Level.WARN) { String.format(format, args) }
     }
 
     /**
@@ -239,9 +233,8 @@ object Birch {
      *
      * @param block A block returning the message to be logged.
      */
-    @JvmStatic
     fun w(block: () -> String) {
-        agent.w(block)
+        engine?.log(Level.WARN, block)
     }
 
     /**
@@ -249,9 +242,8 @@ object Birch {
      *
      * @param message The message to be logged.
      */
-    @JvmStatic
     fun e(message: String) {
-        agent.e(message)
+        engine?.log(Level.ERROR) { message }
     }
 
     /**
@@ -260,9 +252,8 @@ object Birch {
      * @param format A format string used for String.format().
      * @param args The arguments passed into String.format().
      */
-    @JvmStatic
     fun e(format: String, vararg args: Any?) {
-        agent.e(format, args)
+        engine?.log(Level.ERROR) { String.format(format, args) }
     }
 
     /**
@@ -270,8 +261,7 @@ object Birch {
      *
      * @param block A block returning the message to be logged.
      */
-    @JvmStatic
     fun e(block: () -> String) {
-        agent.e(block)
+        engine?.log(Level.ERROR, block)
     }
 }

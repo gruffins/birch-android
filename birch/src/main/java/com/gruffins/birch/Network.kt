@@ -1,38 +1,40 @@
 package com.gruffins.birch
 
 import android.net.Uri
-import com.gruffins.birch.Utils.Companion.safe
+import com.gruffins.birch.Utils.safe
 import org.json.JSONObject
 import java.io.File
 import java.net.URL
 import java.util.*
 
 internal class Network(
+    private val agent: Agent,
+    private val host: String,
     private val apiKey: String,
-    private val configuration: Configuration = Configuration(),
     private val http: HTTP = HTTP()
 ) {
     companion object {
-        const val DEFAULT_HOST = "birch.ryanfung.com"
-        var HOST = DEFAULT_HOST
+        const val UPLOAD_PATH = "/api/v1/logs"
+        const val SOURCE_PATH = "/api/v1/sources"
+        const val CONFIGURATION_PATH = "/api/v1/sources/%s/configuration"
     }
 
     fun uploadLogs(file: File, callback: (Boolean) -> Unit) {
         safe {
-            if (Birch.debug) {
-                Birch.d { "[Birch] Pushing logs ${file.name}." }
+            if (agent.debug) {
+                agent.d { "[Birch] Pushing logs ${file.name}." }
             }
             http.postFile(
-                createURL(configuration.uploadPath),
+                createURL(UPLOAD_PATH),
                 file,
                 mapOf("X-API-Key" to apiKey)
             ) {
                 if (it.unauthorized) {
-                    Birch.e { "[Birch] Invalid API key." }
+                    agent.e { "[Birch] Invalid API key." }
                     callback(false)
                 } else {
-                    if (Birch.debug) {
-                        Birch.d { "[Birch] Upload logs responded. success=${it.success}"}
+                    if (agent.debug) {
+                        agent.d { "[Birch] Upload logs responded. success=${it.success}"}
                     }
                     callback(it.success)
                 }
@@ -42,8 +44,8 @@ internal class Network(
 
     fun syncSource(source: Source, callback: (() -> Unit)? = null) {
             safe {
-                if (Birch.debug) {
-                    Birch.d { "[Birch] Pushing source." }
+                if (agent.debug) {
+                    agent.d { "[Birch] Pushing source." }
                 }
 
                 val payload = JSONObject().also {
@@ -51,7 +53,7 @@ internal class Network(
                 }
 
                 http.post(
-                    createURL(configuration.sourcePath),
+                    createURL(SOURCE_PATH),
                     payload.toString().toByteArray(),
                     mapOf(
                         "X-API-Key" to apiKey,
@@ -59,10 +61,10 @@ internal class Network(
                     ),
                 ) {
                     if (it.unauthorized) {
-                        Birch.e { "[Birch] Invalid API key" }
+                        agent.e { "[Birch] Invalid API key" }
                     } else if (it.success) {
-                        if (Birch.debug) {
-                            Birch.d { "[Birch] Sync source responded. success=${it.success}" }
+                        if (agent.debug) {
+                            agent.d { "[Birch] Sync source responded. success=${it.success}" }
                         }
                         callback?.invoke()
                     }
@@ -72,15 +74,15 @@ internal class Network(
 
     fun getConfiguration(source: Source, callback: (json: JSONObject) -> Unit) {
         safe {
-            if (Birch.debug) {
-                Birch.d { "[Birch] Fetching source configuration." }
+            if (agent.debug) {
+                agent.d { "[Birch] Fetching source configuration." }
             }
 
             http.get(
                 createURL(
                     String.format(
                         Locale.US,
-                        configuration.configurationPath,
+                        CONFIGURATION_PATH,
                         source.uuid
                     )
                 ),
@@ -90,10 +92,10 @@ internal class Network(
                 )
             ) {
                 if (it.unauthorized) {
-                    Birch.e { "[Birch] Invalid API key" }
+                    agent.e { "[Birch] Invalid API key" }
                 } else if (it.success) {
-                    if (Birch.debug) {
-                        Birch.d { "[Birch] Get configuration responded. success=${it.success}" }
+                    if (agent.debug) {
+                        agent.d { "[Birch] Get configuration responded. success=${it.success}" }
                     }
                     val json = JSONObject(it.body)
                     callback(json.getJSONObject("source_configuration"))
@@ -104,14 +106,7 @@ internal class Network(
 
     private fun createURL(path: String): URL {
         return URL(
-            Uri.Builder().scheme("https").authority(configuration.host).path(path).toString()
+            Uri.Builder().scheme("https").authority(host).path(path).toString()
         )
     }
-
-    class Configuration(
-        val host: String = HOST,
-        val uploadPath: String = "/api/v1/logs",
-        val sourcePath: String = "/api/v1/sources",
-        val configurationPath: String = "/api/v1/sources/%s/configuration"
-    )
 }

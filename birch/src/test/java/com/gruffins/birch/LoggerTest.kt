@@ -2,8 +2,7 @@ package com.gruffins.birch
 
 import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
 import org.junit.After
 import org.junit.Before
@@ -19,6 +18,7 @@ import java.security.KeyPairGenerator
 class LoggerTest {
 
     private lateinit var context: Context
+    private lateinit var agent: Agent
     private lateinit var logger: Logger
     private lateinit var currentFile: File
     private lateinit var storage: Storage
@@ -26,8 +26,9 @@ class LoggerTest {
     @Before
     fun setup() {
         context = RuntimeEnvironment.getApplication()
-        storage = Storage(context)
-        logger = Logger(context, storage, null, TestExecutorService())
+        agent = Agent("birch")
+        storage = Storage(context, agent.directory, Level.ERROR)
+        logger = Logger(context, storage, agent, null, TestExecutorService())
         currentFile = File(logger.directory, "current")
 
         ShadowStatFs.registerStats(logger.directory, 1, 1, 1)
@@ -36,17 +37,12 @@ class LoggerTest {
     @After
     fun teardown() {
         logger.directory.deleteRecursively()
-        Birch.debug = false
-        Birch.remote = true
-        Birch.console = false
-        Birch.level = null
-        Birch.synchronous = false
         ShadowStatFs.reset()
     }
 
     @Test
-    fun `Birch#level() overrides server configuration`() {
-        Birch.level = Level.TRACE
+    fun `agent#level() overrides server configuration`() {
+        agent.level = Level.TRACE
         logger.level = Level.NONE
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.exists())
@@ -80,11 +76,10 @@ class LoggerTest {
 
     @Test
     fun `log() with console works at all levels`() {
-        Birch.console = true
+        agent.console = true
         logger.level = Level.TRACE
 
-        val block = mockk<() -> String>()
-        every { block.invoke() } returns "test"
+        val block = spyk({ "test" })
 
         logger.log(Level.TRACE, { "test" }, block)
         logger.log(Level.DEBUG, { "test" }, block)
@@ -100,7 +95,7 @@ class LoggerTest {
     fun `log() with encryption encrypts the logs in the file`() {
         val keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
 
-        logger = Logger(context, storage, Encryption(keyPair.public), TestExecutorService())
+        logger = Logger(context, storage, agent, Encryption(keyPair.public), TestExecutorService())
         logger.level = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
@@ -121,7 +116,7 @@ class LoggerTest {
 
     @Test
     fun `log() without remote enabled does not write to file`() {
-        Birch.remote = false
+        agent.remote = false
         logger.level = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
@@ -139,7 +134,7 @@ class LoggerTest {
     @Test
     fun `log() works synchronously`() {
         logger.level = Level.TRACE
-        Birch.synchronous = true
+        agent.synchronous = true
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.readText().isNotBlank())
     }

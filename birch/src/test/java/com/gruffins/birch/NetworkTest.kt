@@ -12,15 +12,17 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 class NetworkTest {
 
-    private lateinit var configuration: Network.Configuration
+    private lateinit var agent: Agent
     private lateinit var source: Source
     private lateinit var storage: Storage
     private lateinit var eventBus: EventBus
 
     @Before
     fun setup() {
-        configuration = Network.Configuration("127.0.0.1")
-        storage = Storage(RuntimeEnvironment.getApplication())
+        agent = Agent("birch").also {
+            it.debug = true
+        }
+        storage = Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR)
         eventBus = EventBus()
         source = Source(RuntimeEnvironment.getApplication(), storage, eventBus)
     }
@@ -60,7 +62,7 @@ class NetworkTest {
         val network = createNetwork(HTTP.Response(401, "{}"))
 
         var called = false
-        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication()), EventBus())) {
+        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR), EventBus())) {
             called = true
         }
         assert(!called)
@@ -71,7 +73,7 @@ class NetworkTest {
         val network = createNetwork(HTTP.Response(500, "{}"))
 
         var called = false
-        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication()), EventBus())) {
+        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR), EventBus())) {
             called = true
         }
         assert(!called)
@@ -82,7 +84,7 @@ class NetworkTest {
         val network = createNetwork(HTTP.Response(200, "{}"))
 
         var called = false
-        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication()), EventBus())) {
+        network.syncSource(Source(RuntimeEnvironment.getApplication(), Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR), EventBus())) {
             called = true
         }
         assert(called)
@@ -149,8 +151,9 @@ class NetworkTest {
 
     private fun createNetwork(response: HTTP.Response): Network {
         return Network(
+            agent,
+            "localhost",
             "apiKey",
-            configuration,
             TestHTTP(response)
         )
     }

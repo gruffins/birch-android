@@ -14,7 +14,7 @@ class StorageTest {
 
     @Before
     fun setup() {
-        storage = Storage(RuntimeEnvironment.getApplication())
+        storage = Storage(RuntimeEnvironment.getApplication(), "birch", Level.ERROR)
     }
 
     @Test
