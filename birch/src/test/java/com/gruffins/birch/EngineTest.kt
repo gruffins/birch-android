@@ -204,6 +204,7 @@ class EngineTest {
         engine.syncConfigurationSynchronous()
 
         verifyAll {
+            logger.level
             storage.flushPeriod
             storage setProperty "logLevel" value level
             logger setProperty  "level" value level
