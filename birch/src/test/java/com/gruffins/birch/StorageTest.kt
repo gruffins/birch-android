@@ -56,4 +56,10 @@ class StorageTest {
         storage.flushPeriod = 1L
         assert(storage.flushPeriod == 1L)
     }
+
+    @Test
+    fun `optOut() has valid getter and setter`() {
+        storage.optOut = true
+        assert(storage.optOut)
+    }
 }

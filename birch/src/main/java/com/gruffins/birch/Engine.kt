@@ -13,7 +13,7 @@ internal class Engine(
     private val agent: Agent,
     val source: Source,
     private val logger: Logger,
-    private val storage: Storage,
+    val storage: Storage,
     private val network: Network,
     private val executorService: ScheduledExecutorService,
     private val eventBus: EventBus,

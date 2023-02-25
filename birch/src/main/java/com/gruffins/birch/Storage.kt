@@ -45,4 +45,10 @@ internal class Storage(
         set(value) {
             sharedPreferences.edit().putLong("flush_period", value).apply()
         }
+
+    var optOut: Boolean
+        get() = sharedPreferences.getBoolean("opt_out", false)
+        set(value) {
+            sharedPreferences.edit().putBoolean("opt_out", value).apply()
+        }
 }

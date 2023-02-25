@@ -44,6 +44,12 @@ class AgentTest {
     }
 
     @Test
+    fun `optOut() gets and sets`() {
+        agent.optOut = true
+        assert(agent.optOut)
+    }
+
+    @Test
     fun `identifer() gets and sets`() {
         val value = "identifier"
         agent.identifier = value

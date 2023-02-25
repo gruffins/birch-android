@@ -27,9 +27,6 @@ class EngineTest {
     private lateinit var logger: Logger
 
     @MockK(relaxed = true)
-    private lateinit var storage: Storage
-
-    @MockK(relaxed = true)
     private lateinit var network: Network
 
     @MockK(relaxed = true)
@@ -38,6 +35,7 @@ class EngineTest {
     private lateinit var eventBus: EventBus
     private lateinit var engine: Engine
     private lateinit var context: Context
+    private lateinit var storage: Storage
 
     @Before
     fun setup() {
@@ -48,6 +46,7 @@ class EngineTest {
             it.debug = true
         }
         eventBus = EventBus()
+        storage = Storage(context, "birch", Level.ERROR)
         engine = spyk(
             Engine(
                 agent,
@@ -60,6 +59,7 @@ class EngineTest {
                 listOf(PasswordScrubber(), EmailScrubber())
             )
         )
+        agent.engine = engine
     }
 
     @Test
@@ -208,6 +208,7 @@ class EngineTest {
             storage setProperty "logLevel" value level
             logger setProperty  "level" value level
             storage setProperty "flushPeriod" value flushPeriod
+            logger.log(Level.DEBUG, any(), any())
         }
     }
 

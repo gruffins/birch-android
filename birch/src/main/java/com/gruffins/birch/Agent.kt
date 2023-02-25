@@ -16,7 +16,9 @@ class Agent(
     /**
      * Sets the logger to opt out. This disables logs collection and source synchronization.
      */
-    var optOut: Boolean = false
+    var optOut: Boolean
+        get() = engine?.storage?.optOut ?: false
+        set(value) { engine?.storage?.optOut = value }
 
     /**
      * The assigned UUID this source has been given. The UUID remains stable per install, it
