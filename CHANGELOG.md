@@ -1,5 +1,12 @@
 # Changes
 
+1.6.0
+----------
+- Persist optOut changes.
+- Default console logging to true.
+- Default log level to trace.
+- Unit testing to API 33.
+
 1.5.0
 ----------
 - Add ability to force config synchronization.
