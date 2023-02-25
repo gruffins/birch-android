@@ -40,10 +40,9 @@ class Agent(
         set(value) { engine?.source?.customProperties = value }
 
     /**
-     * Set whether logging to console should be enabled. Defaults to FALSE. This should be FALSE
-     * in a production build since you cannot read logcat remotely anyways.
+     * Set whether logging to console should be enabled. Defaults to TRUE. Consider changing to FALSE in production.
      */
-    var console: Boolean = false
+    var console: Boolean = true
 
     /**
      * Set whether remote logging is enabled. Defaults to TRUE. This should be TRUE in a production
@@ -263,5 +262,11 @@ class Agent(
      */
     fun e(block: () -> String) {
         engine?.log(Level.ERROR, block)
+    }
+
+    internal fun debugStatement(block: () -> String) {
+        if (debug) {
+            d(block)
+        }
     }
 }

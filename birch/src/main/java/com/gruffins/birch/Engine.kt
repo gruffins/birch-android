@@ -91,16 +91,12 @@ internal class Engine(
             logger.rollFile()
             logger.nonCurrentFiles()?.sorted()?.forEach {
                 if (it.length() == 0L) {
-                    if (agent.debug) {
-                        agent.d { "[Birch] Empty file ${it.name}." }
-                    }
+                    agent.debugStatement { "[Birch] Empty file ${it.name}." }
                     it.delete()
                 } else {
                     network.uploadLogs(it) { success ->
                         if (success) {
-                            if (agent.debug) {
-                                agent.d { "[Birch] Removing file ${it.name}."}
-                            }
+                            agent.debugStatement { "[Birch] Removing file ${it.name}." }
                             it.delete()
                         }
                     }
@@ -133,8 +129,8 @@ internal class Engine(
         }
 
         network.getConfiguration(source) {
-            val logLevel = Level.fromInt(it.optInt("log_level", Level.ERROR.level))
-            val period = it.optLong("flush_period_seconds", FLUSH_PERIOD_SECONDS)
+            val logLevel = Level.fromInt(it.optInt("log_level", logger.level.level))
+            val period = it.optLong("flush_period_seconds", storage.flushPeriod)
 
             storage.logLevel = logLevel
             logger.level = logLevel
@@ -142,9 +138,8 @@ internal class Engine(
 
             flushPeriod = period
 
-            if (agent.debug) {
-                agent.d { "[Birch] Remote log level set to $logLevel. Remote flush period set to $period." }
-            }
+            agent.debugStatement { "[Birch] Remote log level set to $logLevel." }
+            agent.debugStatement { "[Birch] Remote flush period set to $period." }
         }
         return true
     }

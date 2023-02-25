@@ -21,9 +21,8 @@ internal class Network(
 
     fun uploadLogs(file: File, callback: (Boolean) -> Unit) {
         safe {
-            if (agent.debug) {
-                agent.d { "[Birch] Pushing logs ${file.name}." }
-            }
+            agent.debugStatement { "[Birch] Pushing logs ${file.name}." }
+
             http.postFile(
                 createURL(UPLOAD_PATH),
                 file,
@@ -33,9 +32,7 @@ internal class Network(
                     agent.e { "[Birch] Invalid API key." }
                     callback(false)
                 } else {
-                    if (agent.debug) {
-                        agent.d { "[Birch] Upload logs responded. success=${it.success}"}
-                    }
+                    agent.debugStatement { "[Birch] Upload logs responded. success=${it.success}" }
                     callback(it.success)
                 }
             }
@@ -44,9 +41,7 @@ internal class Network(
 
     fun syncSource(source: Source, callback: (() -> Unit)? = null) {
             safe {
-                if (agent.debug) {
-                    agent.d { "[Birch] Pushing source." }
-                }
+                agent.debugStatement { "[Birch] Pushing source." }
 
                 val payload = JSONObject().also {
                     it.put("source", source.toJson())
@@ -63,9 +58,7 @@ internal class Network(
                     if (it.unauthorized) {
                         agent.e { "[Birch] Invalid API key" }
                     } else if (it.success) {
-                        if (agent.debug) {
-                            agent.d { "[Birch] Sync source responded. success=${it.success}" }
-                        }
+                        agent.debugStatement { "[Birch] Sync source responded. success=${it.success}" }
                         callback?.invoke()
                     }
                 }
@@ -74,9 +67,7 @@ internal class Network(
 
     fun getConfiguration(source: Source, callback: (json: JSONObject) -> Unit) {
         safe {
-            if (agent.debug) {
-                agent.d { "[Birch] Fetching source configuration." }
-            }
+            agent.debugStatement { "[Birch] Fetching source configuration." }
 
             http.get(
                 createURL(
@@ -94,9 +85,7 @@ internal class Network(
                 if (it.unauthorized) {
                     agent.e { "[Birch] Invalid API key" }
                 } else if (it.success) {
-                    if (agent.debug) {
-                        agent.d { "[Birch] Get configuration responded. success=${it.success}" }
-                    }
+                    agent.debugStatement { "[Birch] Get configuration responded. success=${it.success}" }
                     val json = JSONObject(it.body)
                     callback(json.getJSONObject("source_configuration"))
                 }
