@@ -41,8 +41,8 @@ allprojects {
 
 Add birch to your module build.gradle.
 ```
-implementation 'com.ryanfung.birch-android:birch:1.5.0'
-implementation 'com.ryanfung.birch-android:birch-timber:1.5.0' // (optional Tree to plug into Timber)
+implementation 'com.ryanfung.birch-android:birch:1.6.0'
+implementation 'com.ryanfung.birch-android:birch-timber:1.6.0' // (optional Tree to plug into Timber)
 ```
 
 # Setup
@@ -56,10 +56,10 @@ class MyApp: Application() {
       
     // This is a sample of how you might want to configure the logger between development and production builds.
     if (BuildConfig.DEBUG) {
-      Birch.console = true // This enables logging to logcat. The default is false.
-      Birch.remote = false // This disables remote logging if it's a debug build. The default is true.
       Birch.level = Level.TRACE // This overrides the server configuration during local development. The default is null.
       Birch.synchronous = true // This makes the logger log synchronously. The default is false.
+    } else {
+      Birch.console = false // Disable console logging in production.
     }
 
     Birch.debug = true // This line should be removed after you've successfully integrated.
@@ -161,8 +161,6 @@ To comply with different sets of regulations such as GDPR or CCPA, you may be re
 ```kotlin
 Birch.optOut = true
 ```
-
-Your application is responsible for changing this and setting it to the correct value at launch. Birch will not remember the last setting and it defaults to `false`.
 
 # Log Scrubbing
 
