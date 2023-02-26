@@ -105,7 +105,7 @@ If the current log level is `INFO`, the log will not get constructed.
 Device level configuration is left to the server so you can remotely control it. There are a few things you can control on the client side.
 
 ### Console (Logcat)
-During local development, it is useful to see the logs in the console (Logcat). These console logs are not useful in production since you cannot read them remotely. The default is `false`.
+During local development, it is useful to see the logs in the console (Logcat). These console logs are not useful in production since you cannot read them remotely. The default is `true`.
 ```kotlin
 Birch.console = true
 ```
