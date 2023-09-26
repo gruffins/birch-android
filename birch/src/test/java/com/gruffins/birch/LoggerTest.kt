@@ -79,16 +79,20 @@ class LoggerTest {
         agent.console = true
         logger.level = Level.TRACE
 
-        val block = spyk({ "test" })
+        var count = 0
+        val callback = {
+            count += 1
+            ""
+        }
 
-        logger.log(Level.TRACE, { "test" }, block)
-        logger.log(Level.DEBUG, { "test" }, block)
-        logger.log(Level.INFO, { "test" }, block)
-        logger.log(Level.WARN, { "test" }, block)
-        logger.log(Level.ERROR, { "test" }, block)
-        logger.log(Level.NONE, { "test" }, block)
+        logger.log(Level.TRACE, { "test" }, callback)
+        logger.log(Level.DEBUG, { "test" }, callback)
+        logger.log(Level.INFO, { "test" }, callback)
+        logger.log(Level.WARN, { "test" }, callback)
+        logger.log(Level.ERROR, { "test" }, callback)
+        logger.log(Level.NONE, { "test" }, callback)
 
-        verify(exactly = 5) { block.invoke() }
+        assert(count == 5)
     }
 
     @Test
