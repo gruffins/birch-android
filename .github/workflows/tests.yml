@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         version:
-          - '33,32,31,30'
+          - '34,33,32,31,30'
           - '29,28,27,26,25'
           - '24,23,22,21,19'
     name: Specs
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: zulu
       - uses: gradle/gradle-build-action@v2
       - name: Specs
