@@ -161,7 +161,7 @@ object Birch {
     }
 
     /**
-     * Logs the message adn throwable at the TRACE level.
+     * Logs the message and throwable at the TRACE level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -213,7 +213,7 @@ object Birch {
     }
 
     /**
-     * Logs the message adn throwable at the DEBUG level.
+     * Logs the message and throwable at the DEBUG level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -265,7 +265,7 @@ object Birch {
     }
 
     /**
-     * Logs the message adn throwable at the INFO level.
+     * Logs the message and throwable at the INFO level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -317,7 +317,7 @@ object Birch {
     }
 
     /**
-     * Logs the message adn throwable at the WARN level.
+     * Logs the message and throwable at the WARN level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -369,7 +369,7 @@ object Birch {
     }
 
     /**
-     * Logs the message adn throwable at the ERROR level.
+     * Logs the message and throwable at the ERROR level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.

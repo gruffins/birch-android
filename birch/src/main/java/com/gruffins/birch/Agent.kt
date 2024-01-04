@@ -166,7 +166,7 @@ class Agent(
     }
 
     /**
-     * Logs the message and throwable at the ERROR level.
+     * Logs the message and throwable at the TRACE level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -213,7 +213,7 @@ class Agent(
     }
 
     /**
-     * Logs the message and throwable at the ERROR level.
+     * Logs the message and throwable at the DEBUG level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
@@ -260,7 +260,7 @@ class Agent(
     }
 
     /**
-     * Logs the message and throwable at the ERROR level.
+     * Logs the message and throwable at the INFO level.
      *
      * @param message The message to be logged.
      * @param throwable The throwable to log.
