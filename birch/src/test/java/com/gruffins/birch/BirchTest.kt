@@ -101,7 +101,7 @@ class BirchTest {
     @Test
     fun `t(StringF) calls the engine`() {
         Birch.t("message %s", "hello")
-        verify { agent.t("message %s", any()) }
+        verify { agent.t("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -119,6 +119,14 @@ class BirchTest {
     }
 
     @Test
+    fun `t(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.t(message, throwable)
+        verify { agent.t(message, throwable) }
+    }
+
+    @Test
     fun `d(String) calls the engine`() {
         Birch.d("message")
         verify { agent.d("message") }
@@ -127,7 +135,7 @@ class BirchTest {
     @Test
     fun `d(StringF) calls the engine`() {
         Birch.d("message %s", "hello")
-        verify { agent.d("message %s", any()) }
+        verify { agent.d("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -145,6 +153,14 @@ class BirchTest {
     }
 
     @Test
+    fun `d(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.d(message, throwable)
+        verify { agent.d(message, throwable) }
+    }
+
+    @Test
     fun `i(String) calls the engine`() {
         Birch.i("message")
         verify { agent.i("message") }
@@ -153,7 +169,7 @@ class BirchTest {
     @Test
     fun `i(StringF) calls the engine`() {
         Birch.i("message %s", "hello")
-        verify { agent.i("message %s", any()) }
+        verify { agent.i("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -171,6 +187,14 @@ class BirchTest {
     }
 
     @Test
+    fun `i(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.i(message, throwable)
+        verify { agent.i(message, throwable) }
+    }
+
+    @Test
     fun `w(String) calls the engine`() {
         Birch.w("message")
         verify { agent.w("message") }
@@ -179,7 +203,7 @@ class BirchTest {
     @Test
     fun `w(StringF) calls the engine`() {
         Birch.w("message %s", "hello")
-        verify { agent.w("message %s", any()) }
+        verify { agent.w("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -197,6 +221,14 @@ class BirchTest {
     }
 
     @Test
+    fun `w(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.w(message, throwable)
+        verify { agent.w(message, throwable) }
+    }
+
+    @Test
     fun `e(String) calls the engine`() {
         Birch.e("message")
         verify { agent.e("message") }
@@ -205,7 +237,7 @@ class BirchTest {
     @Test
     fun `e(StringF) calls the engine`() {
         Birch.e("message %s", "hello")
-        verify { agent.e("message %s", any()) }
+        verify { agent.e("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -220,5 +252,13 @@ class BirchTest {
         val throwable = Throwable("Error")
         Birch.e(throwable)
         verify { agent.e(throwable) }
+    }
+
+    @Test
+    fun `e(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.e(message, throwable)
+        verify { agent.e(message, throwable) }
     }
 }

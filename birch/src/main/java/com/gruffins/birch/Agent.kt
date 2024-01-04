@@ -144,7 +144,7 @@ class Agent(
      * @param args The arguments passed into String.format().
      */
     fun t(format: String, vararg args: Any?) {
-        engine?.log(Level.TRACE) { String.format(format, args) }
+        engine?.log(Level.TRACE) { String.format(format, *args) }
     }
 
      /**
@@ -158,9 +158,21 @@ class Agent(
 
     /**
      * Logs the throwable at the TRACE level.
+     *
+     * @param throwable The throwable to log.
      */
     fun t(throwable: Throwable) {
         engine?.log(Level.TRACE) { getStackTraceString(throwable) }
+    }
+
+    /**
+     * Logs the message and throwable at the ERROR level.
+     *
+     * @param message The message to be logged.
+     * @param throwable The throwable to log.
+     */
+    fun t(message: String, throwable: Throwable) {
+        engine?.log(Level.TRACE) { "$message\n\n${getStackTraceString(throwable)}" }
     }
 
     /**
@@ -179,7 +191,7 @@ class Agent(
      * @param args The arguments passed into String.format().
      */
     fun d(format: String, vararg args: Any?) {
-        engine?.log(Level.DEBUG) { String.format(format, args) }
+        engine?.log(Level.DEBUG) { String.format(format, *args) }
     }
 
     /**
@@ -193,9 +205,21 @@ class Agent(
 
     /**
      * Logs the throwable at the DEBUG level.
+     *
+     * @param throwable The throwable to log.
      */
     fun d(throwable: Throwable) {
         engine?.log(Level.DEBUG) { getStackTraceString(throwable) }
+    }
+
+    /**
+     * Logs the message and throwable at the ERROR level.
+     *
+     * @param message The message to be logged.
+     * @param throwable The throwable to log.
+     */
+    fun d(message: String, throwable: Throwable) {
+        engine?.log(Level.DEBUG) { "$message\n\n${getStackTraceString(throwable)}" }
     }
 
     /**
@@ -214,7 +238,7 @@ class Agent(
      * @param args The arguments passed into String.format().
      */
     fun i(format: String, vararg args: Any?) {
-        engine?.log(Level.INFO) { String.format(format, args) }
+        engine?.log(Level.INFO) { String.format(format, *args) }
     }
 
     /**
@@ -228,9 +252,21 @@ class Agent(
 
     /**
      * Logs the throwable at the INFO level.
+     *
+     * @param throwable The throwable to log.
      */
     fun i(throwable: Throwable) {
         engine?.log(Level.INFO) { getStackTraceString(throwable) }
+    }
+
+    /**
+     * Logs the message and throwable at the ERROR level.
+     *
+     * @param message The message to be logged.
+     * @param throwable The throwable to log.
+     */
+    fun i(message: String, throwable: Throwable) {
+        engine?.log(Level.INFO) { "$message\n\n${getStackTraceString(throwable)}" }
     }
 
      /**
@@ -249,7 +285,7 @@ class Agent(
      * @param args The arguments passed into String.format().
      */
     fun w(format: String, vararg args: Any?) {
-        engine?.log(Level.WARN) { String.format(format, args) }
+        engine?.log(Level.WARN) { String.format(format, *args) }
     }
 
     /**
@@ -263,12 +299,24 @@ class Agent(
 
     /**
      * Logs the throwable at the WARN level.
+     *
+     * @param throwable The throwable to log.
      */
     fun w(throwable: Throwable) {
         engine?.log(Level.WARN) { getStackTraceString(throwable) }
     }
 
-    /**n
+    /**
+     * Logs the message and throwable at the WARN level.
+     *
+     * @param message The message to be logged.
+     * @param throwable The throwable to log.
+     */
+    fun w(message: String, throwable: Throwable) {
+        engine?.log(Level.WARN) { "$message\n\n${getStackTraceString(throwable)}" }
+    }
+
+    /**
      * Logs a message at the ERROR level.
      *
      * @param message The message to be logged.
@@ -284,7 +332,7 @@ class Agent(
      * @param args The arguments passed into String.format().
      */
     fun e(format: String, vararg args: Any?) {
-        engine?.log(Level.ERROR) { String.format(format, args) }
+        engine?.log(Level.ERROR) { String.format(format, *args) }
     }
 
     /**
@@ -298,9 +346,21 @@ class Agent(
 
     /**
      * Logs the throwable at the ERROR level.
+     *
+     * @param throwable The throwable to log.
      */
     fun e(throwable: Throwable) {
         engine?.log(Level.ERROR) { getStackTraceString(throwable) }
+    }
+
+    /**
+     * Logs the message and throwable at the ERROR level.
+     *
+     * @param message The message to be logged.
+     * @param throwable The throwable to log.
+     */
+    fun e(message: String, throwable: Throwable) {
+        engine?.log(Level.ERROR) { "$message\n\n${getStackTraceString(throwable)}" }
     }
 
     internal fun debugStatement(block: () -> String) {
