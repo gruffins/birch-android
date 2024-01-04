@@ -1,6 +1,8 @@
 package com.gruffins.birch
 
 import android.content.Context
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.concurrent.Executors
 
 class Agent(
@@ -155,6 +157,13 @@ class Agent(
     }
 
     /**
+     * Logs the throwable at the TRACE level.
+     */
+    fun t(throwable: Throwable) {
+        engine?.log(Level.TRACE) { getStackTraceString(throwable) }
+    }
+
+    /**
      * Logs a message at the DEBUG level.
      *
      * @param message The message to be logged.
@@ -183,6 +192,13 @@ class Agent(
     }
 
     /**
+     * Logs the throwable at the DEBUG level.
+     */
+    fun d(throwable: Throwable) {
+        engine?.log(Level.DEBUG) { getStackTraceString(throwable) }
+    }
+
+    /**
      * Logs a message at the INFO level.
      *
      * @param message The message to be logged.
@@ -208,6 +224,13 @@ class Agent(
      */
     fun i(block: () -> String) {
         engine?.log(Level.INFO, block)
+    }
+
+    /**
+     * Logs the throwable at the INFO level.
+     */
+    fun i(throwable: Throwable) {
+        engine?.log(Level.INFO) { getStackTraceString(throwable) }
     }
 
      /**
@@ -239,6 +262,13 @@ class Agent(
     }
 
     /**
+     * Logs the throwable at the WARN level.
+     */
+    fun w(throwable: Throwable) {
+        engine?.log(Level.WARN) { getStackTraceString(throwable) }
+    }
+
+    /**n
      * Logs a message at the ERROR level.
      *
      * @param message The message to be logged.
@@ -266,9 +296,24 @@ class Agent(
         engine?.log(Level.ERROR, block)
     }
 
+    /**
+     * Logs the throwable at the ERROR level.
+     */
+    fun e(throwable: Throwable) {
+        engine?.log(Level.ERROR) { getStackTraceString(throwable) }
+    }
+
     internal fun debugStatement(block: () -> String) {
         if (debug) {
             d(block)
         }
+    }
+
+    private fun getStackTraceString(throwable: Throwable): String {
+        val sw = StringWriter(256)
+        val pw = PrintWriter(sw, false)
+        throwable.printStackTrace(pw)
+        pw.flush()
+        return sw.toString()
     }
 }

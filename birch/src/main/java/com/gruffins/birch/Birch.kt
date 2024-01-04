@@ -151,6 +151,16 @@ object Birch {
     }
 
     /**
+     * Logs the throwable at the TRACE level.
+     *
+     * @param throwable The throwable to log.
+     */
+    @JvmStatic
+    fun t(throwable: Throwable) {
+        agent.t(throwable)
+    }
+
+    /**
      * Logs a message at the DEBUG level.
      *
      * @param message The message to be logged.
@@ -182,6 +192,16 @@ object Birch {
     }
 
     /**
+     * Logs the throwable at the DEBUG level.
+     *
+     * @param throwable The throwable to log.
+     */
+    @JvmStatic
+    fun d(throwable: Throwable) {
+        agent.d(throwable)
+    }
+
+    /**
      * Logs a message at the INFO level.
      *
      * @param message The message to be logged.
@@ -210,6 +230,16 @@ object Birch {
     @JvmStatic
     fun i(block: () -> String) {
         agent.i(block)
+    }
+
+    /**
+     * Logs the throwable at the INFO level.
+     *
+     * @param throwable The throwable to log.
+     */
+    @JvmStatic
+    fun i(throwable: Throwable) {
+        agent.i(throwable)
     }
 
      /**
@@ -244,6 +274,16 @@ object Birch {
     }
 
     /**
+     * Logs the throwable at the WARN level.
+     *
+     * @param throwable The throwable to log.
+     */
+    @JvmStatic
+    fun w(throwable: Throwable) {
+        agent.w(throwable)
+    }
+
+    /**
      * Logs a message at the ERROR level.
      *
      * @param message The message to be logged.
@@ -272,5 +312,15 @@ object Birch {
     @JvmStatic
     fun e(block: () -> String) {
         agent.e(block)
+    }
+
+    /**
+     * Logs the throwable at the ERROR level.
+     *
+     * @param throwable The throwable to log.
+     */
+    @JvmStatic
+    fun e(throwable: Throwable) {
+        agent.e(throwable)
     }
 }

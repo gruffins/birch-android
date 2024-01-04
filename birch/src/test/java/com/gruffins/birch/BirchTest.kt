@@ -112,6 +112,13 @@ class BirchTest {
     }
 
     @Test
+    fun `t(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.t(throwable)
+        verify { agent.t(throwable) }
+    }
+
+    @Test
     fun `d(String) calls the engine`() {
         Birch.d("message")
         verify { agent.d("message") }
@@ -128,6 +135,13 @@ class BirchTest {
         val block = { "message" }
         Birch.d(block)
         verify { agent.d(block) }
+    }
+
+    @Test
+    fun `d(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.d(throwable)
+        verify { agent.d(throwable) }
     }
 
     @Test
@@ -150,6 +164,13 @@ class BirchTest {
     }
 
     @Test
+    fun `i(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.i(throwable)
+        verify { agent.i(throwable) }
+    }
+
+    @Test
     fun `w(String) calls the engine`() {
         Birch.w("message")
         verify { agent.w("message") }
@@ -169,6 +190,13 @@ class BirchTest {
     }
 
     @Test
+    fun `w(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.w(throwable)
+        verify { agent.w(throwable) }
+    }
+
+    @Test
     fun `e(String) calls the engine`() {
         Birch.e("message")
         verify { agent.e("message") }
@@ -185,5 +213,12 @@ class BirchTest {
         val block = { "message" }
         Birch.e(block)
         verify { agent.e(block) }
+    }
+
+    @Test
+    fun `e(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.e(throwable)
+        verify { agent.e(throwable) }
     }
 }

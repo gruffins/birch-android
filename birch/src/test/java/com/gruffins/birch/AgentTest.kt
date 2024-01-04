@@ -114,6 +114,12 @@ class AgentTest {
     }
 
     @Test
+    fun `t() with throwable`() {
+        agent.t(Throwable("Error"))
+        verify { engine.log(Level.TRACE, any()) }
+    }
+
+    @Test
     fun `d() with string`() {
         agent.d("message")
         verify { engine.log(Level.DEBUG, any()) }
@@ -128,6 +134,12 @@ class AgentTest {
     @Test
     fun `d() with block`() {
         agent.d { "message" }
+        verify { engine.log(Level.DEBUG, any()) }
+    }
+
+    @Test
+    fun `d() with a throwable`() {
+        agent.d(Throwable("Error"))
         verify { engine.log(Level.DEBUG, any()) }
     }
 
@@ -150,6 +162,12 @@ class AgentTest {
     }
 
     @Test
+    fun `i() with throwable`() {
+        agent.i(Throwable("Error"))
+        verify { engine.log(Level.INFO, any()) }
+    }
+
+    @Test
     fun `w() with string`() {
         agent.w("message")
         verify { engine.log(Level.WARN, any()) }
@@ -168,6 +186,12 @@ class AgentTest {
     }
 
     @Test
+    fun `w() with throwable`() {
+        agent.w(Throwable("Error"))
+        verify { engine.log(Level.WARN, any()) }
+    }
+
+    @Test
     fun `e() with string`() {
         agent.e("message")
         verify { engine.log(Level.ERROR, any()) }
@@ -182,6 +206,12 @@ class AgentTest {
     @Test
     fun `e() with block`() {
         agent.e { "message" }
+        verify { engine.log(Level.ERROR, any()) }
+    }
+
+    @Test
+    fun `e() with throwable`() {
+        agent.e(Throwable("Error"))
         verify { engine.log(Level.ERROR, any()) }
     }
 }
