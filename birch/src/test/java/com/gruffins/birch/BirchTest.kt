@@ -101,7 +101,7 @@ class BirchTest {
     @Test
     fun `t(StringF) calls the engine`() {
         Birch.t("message %s", "hello")
-        verify { agent.t("message %s", any()) }
+        verify { agent.t("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -109,6 +109,21 @@ class BirchTest {
         val block = { "message" }
         Birch.t(block)
         verify { agent.t(block) }
+    }
+
+    @Test
+    fun `t(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.t(throwable)
+        verify { agent.t(throwable) }
+    }
+
+    @Test
+    fun `t(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.t(message, throwable)
+        verify { agent.t(message, throwable) }
     }
 
     @Test
@@ -120,7 +135,7 @@ class BirchTest {
     @Test
     fun `d(StringF) calls the engine`() {
         Birch.d("message %s", "hello")
-        verify { agent.d("message %s", any()) }
+        verify { agent.d("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -128,6 +143,21 @@ class BirchTest {
         val block = { "message" }
         Birch.d(block)
         verify { agent.d(block) }
+    }
+
+    @Test
+    fun `d(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.d(throwable)
+        verify { agent.d(throwable) }
+    }
+
+    @Test
+    fun `d(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.d(message, throwable)
+        verify { agent.d(message, throwable) }
     }
 
     @Test
@@ -139,7 +169,7 @@ class BirchTest {
     @Test
     fun `i(StringF) calls the engine`() {
         Birch.i("message %s", "hello")
-        verify { agent.i("message %s", any()) }
+        verify { agent.i("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -147,6 +177,21 @@ class BirchTest {
         val block = { "message" }
         Birch.i(block)
         verify { agent.i(block) }
+    }
+
+    @Test
+    fun `i(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.i(throwable)
+        verify { agent.i(throwable) }
+    }
+
+    @Test
+    fun `i(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.i(message, throwable)
+        verify { agent.i(message, throwable) }
     }
 
     @Test
@@ -158,7 +203,7 @@ class BirchTest {
     @Test
     fun `w(StringF) calls the engine`() {
         Birch.w("message %s", "hello")
-        verify { agent.w("message %s", any()) }
+        verify { agent.w("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -166,6 +211,21 @@ class BirchTest {
         val block = { "message" }
         Birch.w(block)
         verify { agent.w(block) }
+    }
+
+    @Test
+    fun `w(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.w(throwable)
+        verify { agent.w(throwable) }
+    }
+
+    @Test
+    fun `w(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.w(message, throwable)
+        verify { agent.w(message, throwable) }
     }
 
     @Test
@@ -177,7 +237,7 @@ class BirchTest {
     @Test
     fun `e(StringF) calls the engine`() {
         Birch.e("message %s", "hello")
-        verify { agent.e("message %s", any()) }
+        verify { agent.e("message %s", *anyVararg<String>()) }
     }
 
     @Test
@@ -185,5 +245,20 @@ class BirchTest {
         val block = { "message" }
         Birch.e(block)
         verify { agent.e(block) }
+    }
+
+    @Test
+    fun `e(Throwable) calls the engine`() {
+        val throwable = Throwable("Error")
+        Birch.e(throwable)
+        verify { agent.e(throwable) }
+    }
+
+    @Test
+    fun `e(String, Throwable) calls the engine`() {
+        val message = "message"
+        val throwable = Throwable("Error")
+        Birch.e(message, throwable)
+        verify { agent.e(message, throwable) }
     }
 }
