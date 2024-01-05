@@ -1,5 +1,10 @@
 # Changes
 
+1.7.0
+----------
+- Add log methods to capture throwables.
+- Fix String.format
+
 1.6.0
 ----------
 - Persist optOut changes.
