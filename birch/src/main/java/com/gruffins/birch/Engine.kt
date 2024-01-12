@@ -135,7 +135,6 @@ internal class Engine(
             val period = it.optLong("flush_period_seconds", storage.flushPeriod)
 
             storage.logLevel = logLevel
-            logger.level = logLevel
             storage.flushPeriod = period
 
             flushPeriod = period

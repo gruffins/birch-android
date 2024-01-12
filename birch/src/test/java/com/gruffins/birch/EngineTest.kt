@@ -190,7 +190,7 @@ class EngineTest {
     }
 
     @Test
-    fun `syncConfiguration() sets the log level on storage, level on logger and flush period on storage`() {
+    fun `syncConfiguration() sets the log level on storage and flush period on storage`() {
         val level = Level.TRACE
         val flushPeriod = 1L
         every { network.getConfiguration(source, any()) } answers {
@@ -207,7 +207,6 @@ class EngineTest {
             logger.level
             storage.flushPeriod
             storage setProperty "logLevel" value level
-            logger setProperty  "level" value level
             storage setProperty "flushPeriod" value flushPeriod
             logger.log(Level.DEBUG, any(), any())
         }
