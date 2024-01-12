@@ -96,7 +96,6 @@ class BirchTest {
     fun `t(String) calls the agent`() {
         Birch.t("message")
         verify { agent.t("message") }
-        Birch.level = Level.fromInt(0.0.toInt())
     }
 
     @Test
