@@ -96,6 +96,7 @@ class BirchTest {
     fun `t(String) calls the agent`() {
         Birch.t("message")
         verify { agent.t("message") }
+        Birch.level = Level.fromInt(0.0.toInt())
     }
 
     @Test
@@ -260,5 +261,11 @@ class BirchTest {
         val throwable = Throwable("Error")
         Birch.e(message, throwable)
         verify { agent.e(message, throwable) }
+    }
+
+    @Test
+    fun `currentLevel() calls the engine`() {
+        Birch.currentLevel
+        verify { agent.currentLevel }
     }
 }

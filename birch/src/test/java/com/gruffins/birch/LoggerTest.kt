@@ -142,4 +142,18 @@ class LoggerTest {
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.readText().isNotBlank())
     }
+    @Test
+    fun `currentLevel() factors in agent override`() {
+        agent.level = Level.TRACE
+        storage.logLevel = Level.ERROR
+        assert(logger.currentLevel == Level.TRACE)
+    }
+
+    @Test
+    fun `currentLevel() returns the storage level`() {
+        agent.level = null
+        storage.logLevel = Level.ERROR
+        assert(logger.currentLevel == Level.ERROR)
+    }
+
 }

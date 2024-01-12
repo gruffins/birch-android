@@ -31,6 +31,7 @@ internal class Logger(
 
     var level: Level = storage.logLevel
     val directory = File(context.filesDir, agent.directory)
+    val currentLevel get() = agent.level ?: this.level
 
     private var currentFile = File(directory, "current")
 
@@ -39,7 +40,6 @@ internal class Logger(
     }
 
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
-        val currentLevel = agent.level ?: this.level
         if (diskAvailable() && level >= currentLevel)   {
             executorService.submit {
                 FileWriter(currentFile, true).use { fileWriter ->

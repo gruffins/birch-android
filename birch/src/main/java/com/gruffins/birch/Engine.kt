@@ -37,6 +37,8 @@ internal class Engine(
         futures[FutureType.FLUSH] = executorService.scheduleAtFixedRate(this::flush, 0, newValue, TimeUnit.SECONDS)
     }
 
+    val currentLevel get() = logger.currentLevel
+
     init {
         eventBus.subscribe(this)
     }

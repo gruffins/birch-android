@@ -244,4 +244,9 @@ class AgentTest {
         agent.e("message", Throwable("Error"))
         verify { engine.log(Level.ERROR, any()) }
     }
+
+    @Test
+    fun `currentLevel() returns the loggers level`() {
+        assert(agent.currentLevel == engine.currentLevel)
+    }
 }

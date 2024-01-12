@@ -248,4 +248,9 @@ class EngineTest {
         engine.trimFiles()
         verify { executor.execute(any()) }
     }
+
+    @Test
+    fun `currentLevel() returns the current level`() {
+        assert(engine.currentLevel == logger.currentLevel)
+    }
 }
