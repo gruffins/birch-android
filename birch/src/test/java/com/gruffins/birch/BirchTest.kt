@@ -261,4 +261,10 @@ class BirchTest {
         Birch.e(message, throwable)
         verify { agent.e(message, throwable) }
     }
+
+    @Test
+    fun `currentLevel() calls the engine`() {
+        Birch.currentLevel
+        verify { agent.currentLevel }
+    }
 }

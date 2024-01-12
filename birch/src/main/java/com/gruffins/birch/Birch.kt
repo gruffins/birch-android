@@ -73,6 +73,13 @@ object Birch {
         get() = agent.level
         set(value) { agent.level = value }
 
+
+    /**
+     * Returns the current level used by the logger. This takes into account your override as well as the server configuration.
+     */
+    @JvmStatic
+    val currentLevel get() = agent.currentLevel
+
     /**
      * Whether to log synchronously or asynchronously. Defaults to FALSE. This should be FALSE in
      * a production build.

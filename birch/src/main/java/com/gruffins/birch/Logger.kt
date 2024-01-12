@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  */
 internal class Logger(
     context: Context,
-    storage: Storage,
+    private val storage: Storage,
     private val agent: Agent,
     private val encryption: Encryption?,
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor { r -> Thread(r, THREAD_NAME) }
@@ -29,8 +29,9 @@ internal class Logger(
         const val MAX_FILE_SIZE_BYTES = 1024 * 512 * 1
     }
 
-    var level: Level = storage.logLevel
+    val level get() = storage.logLevel
     val directory = File(context.filesDir, agent.directory)
+    val currentLevel get() = agent.level ?: this.level
 
     private var currentFile = File(directory, "current")
 
@@ -39,7 +40,6 @@ internal class Logger(
     }
 
     fun log(level: Level, block: () -> String, original: () -> String): Boolean {
-        val currentLevel = agent.level ?: this.level
         if (diskAvailable() && level >= currentLevel)   {
             executorService.submit {
                 FileWriter(currentFile, true).use { fileWriter ->

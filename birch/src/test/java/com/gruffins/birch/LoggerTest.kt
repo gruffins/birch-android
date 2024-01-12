@@ -43,21 +43,21 @@ class LoggerTest {
     @Test
     fun `agent#level() overrides server configuration`() {
         agent.level = Level.TRACE
-        logger.level = Level.NONE
+        storage.logLevel = Level.NONE
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.exists())
     }
 
     @Test
     fun `logger skips logs lower than the current log level`() {
-        logger.level = Level.NONE
+        storage.logLevel = Level.NONE
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(!currentFile.exists())
     }
 
     @Test
     fun `logger does not skip logs higher than the current log level`() {
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.exists())
     }
@@ -77,7 +77,7 @@ class LoggerTest {
     @Test
     fun `log() with console works at all levels`() {
         agent.console = true
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
 
         var count = 0
         val callback = {
@@ -100,7 +100,7 @@ class LoggerTest {
         val keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
 
         logger = Logger(context, storage, agent, Encryption(keyPair.public), TestExecutorService())
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
         val content = currentFile.readText()
@@ -110,7 +110,7 @@ class LoggerTest {
 
     @Test
     fun `log() without encryption does not encrypt logs in the file`() {
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
         val content = currentFile.readText()
@@ -121,7 +121,7 @@ class LoggerTest {
     @Test
     fun `log() without remote enabled does not write to file`() {
         agent.remote = false
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
         assert(currentFile.readText().isBlank())
@@ -129,7 +129,7 @@ class LoggerTest {
 
     @Test
     fun `log() with remote enabled writes to file`() {
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         logger.log(Level.TRACE, { "a" }, { "a" })
 
         assert(currentFile.readText().isNotBlank())
@@ -137,9 +137,23 @@ class LoggerTest {
 
     @Test
     fun `log() works synchronously`() {
-        logger.level = Level.TRACE
+        storage.logLevel = Level.TRACE
         agent.synchronous = true
         logger.log(Level.TRACE, { "a" }, { "a" })
         assert(currentFile.readText().isNotBlank())
     }
+    @Test
+    fun `currentLevel() factors in agent override`() {
+        agent.level = Level.TRACE
+        storage.logLevel = Level.ERROR
+        assert(logger.currentLevel == Level.TRACE)
+    }
+
+    @Test
+    fun `currentLevel() returns the storage level`() {
+        agent.level = null
+        storage.logLevel = Level.ERROR
+        assert(logger.currentLevel == Level.ERROR)
+    }
+
 }

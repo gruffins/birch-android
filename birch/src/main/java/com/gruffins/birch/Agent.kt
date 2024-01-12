@@ -61,6 +61,11 @@ class Agent(
     var level: Level? = null
 
     /**
+     * Returns the current level used by the logger. This takes into account your override as well as the server configuration.
+     */
+    val currentLevel get() = engine?.currentLevel
+
+    /**
      * Whether to log synchronously or asynchronously. Defaults to FALSE. This should be FALSE in
      * a production build.
      */
