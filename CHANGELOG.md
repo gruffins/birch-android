@@ -1,5 +1,9 @@
 # Changes
 
+1.8.0
+----------
+- Adds ability to retrieve current log level.
+
 1.7.0
 ----------
 - Add log methods to capture throwables.
