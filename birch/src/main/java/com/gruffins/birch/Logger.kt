@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.StatFs
 import android.util.Log
 import com.gruffins.birch.Utils.safe
+import com.gruffins.birch.Utils.splitStringBySize
 import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
@@ -27,6 +28,7 @@ internal class Logger(
     companion object {
         const val THREAD_NAME = "Birch-Logger"
         const val MAX_FILE_SIZE_BYTES = 1024 * 512 * 1
+        const val MAX_ENTRY_SIZE = 4096
     }
 
     val level get() = storage.logLevel
@@ -39,33 +41,39 @@ internal class Logger(
         directory.mkdirs()
     }
 
-    fun log(level: Level, block: () -> String, original: () -> String): Boolean {
+    fun log(level: Level, metadata: () -> JSONObject, original: () -> String): Boolean {
         if (diskAvailable() && level >= currentLevel)   {
             executorService.submit {
                 FileWriter(currentFile, true).use { fileWriter ->
                     ensureCurrentFileExists()
 
-                    val message = encryption?.let { e ->
-                        JSONObject().also {
-                            it.put("em", e.encrypt(block()))
-                            it.put("ek", e.encryptedKey)
-                        }.toString()
-                    } ?: run {
-                        block()
-                    }
+                    splitStringBySize(original(), MAX_ENTRY_SIZE).forEach { chunk ->
+                        val json = metadata().also {
+                            it.put("message", chunk)
+                        }
 
-                    if (agent.remote) {
-                        fileWriter.write("$message,\n")
-                    }
+                        val message = encryption?.let { enc ->
+                            JSONObject().also {
+                                it.put("ek", enc.encryptedKey)
+                                it.put("em", enc.encrypt(json.toString()))
+                            }
+                        } ?: run {
+                            json.toString()
+                        }
 
-                    if (agent.console) {
-                        when (level) {
-                            Level.TRACE -> Log.v("Birch", original())
-                            Level.DEBUG -> Log.d("Birch", original())
-                            Level.INFO -> Log.i("Birch", original())
-                            Level.WARN -> Log.w("Birch", original())
-                            Level.ERROR -> Log.e("Birch", original())
-                            Level.NONE -> Unit
+                        if (agent.remote) {
+                            fileWriter.write("$message,\n")
+                        }
+
+                        if (agent.console) {
+                            when (level) {
+                                Level.TRACE -> Log.v("Birch", chunk)
+                                Level.DEBUG -> Log.d("Birch", chunk)
+                                Level.INFO -> Log.i("Birch", chunk)
+                                Level.WARN -> Log.w("Birch", chunk)
+                                Level.ERROR -> Log.e("Birch", chunk)
+                                Level.NONE -> Unit
+                            }
                         }
                     }
 

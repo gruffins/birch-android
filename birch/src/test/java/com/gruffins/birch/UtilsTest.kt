@@ -1,5 +1,6 @@
 package com.gruffins.birch
 
+import com.gruffins.birch.Utils.splitStringBySize
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -77,5 +78,22 @@ class UtilsTest {
 
         assert(Utils.compress(file).isNotEmpty())
         file.delete()
+    }
+
+    @Test
+    fun `splitStringBySize() works when string is shorter than split size`() {
+        val input = "abcd"
+        val output = splitStringBySize(input, 16)
+        assert(output.size == 1)
+        assert(output[0] == input)
+    }
+
+    @Test
+    fun `splitStringBySize() works when string is longer than split size`() {
+        val input = "ab"
+        val output = splitStringBySize(input, 1)
+        assert(output.size == 2)
+        assert(output[0] == "a")
+        assert(output[1] == "b")
     }
 }
