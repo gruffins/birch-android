@@ -4,6 +4,7 @@ import android.content.Context
 import com.gruffins.birch.utils.TestExecutorService
 import io.mockk.spyk
 import io.mockk.verify
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -44,21 +45,21 @@ class LoggerTest {
     fun `agent#level() overrides server configuration`() {
         agent.level = Level.TRACE
         storage.logLevel = Level.NONE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
         assert(currentFile.exists())
     }
 
     @Test
     fun `logger skips logs lower than the current log level`() {
         storage.logLevel = Level.NONE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
         assert(!currentFile.exists())
     }
 
     @Test
     fun `logger does not skip logs higher than the current log level`() {
         storage.logLevel = Level.TRACE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
         assert(currentFile.exists())
     }
 
@@ -71,7 +72,7 @@ class LoggerTest {
     @Test
     fun `logger skips logging if disk is full`() {
         ShadowStatFs.registerStats(logger.directory, 1, 0, 0)
-        assert(!logger.log(Level.TRACE, { "a" }, { "a" }))
+        assert(!logger.log(Level.TRACE, { JSONObject() }, { "a" }))
     }
 
     @Test
@@ -85,12 +86,11 @@ class LoggerTest {
             ""
         }
 
-        logger.log(Level.TRACE, { "test" }, callback)
-        logger.log(Level.DEBUG, { "test" }, callback)
-        logger.log(Level.INFO, { "test" }, callback)
-        logger.log(Level.WARN, { "test" }, callback)
-        logger.log(Level.ERROR, { "test" }, callback)
-        logger.log(Level.NONE, { "test" }, callback)
+        logger.log(Level.TRACE, { JSONObject() }, callback)
+        logger.log(Level.DEBUG, { JSONObject() }, callback)
+        logger.log(Level.INFO, { JSONObject() }, callback)
+        logger.log(Level.WARN, { JSONObject() }, callback)
+        logger.log(Level.ERROR, { JSONObject() }, callback)
 
         assert(count == 5)
     }
@@ -101,7 +101,7 @@ class LoggerTest {
 
         logger = Logger(context, storage, agent, Encryption(keyPair.public), TestExecutorService())
         storage.logLevel = Level.TRACE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
 
         val content = currentFile.readText()
         assert(content.contains("em"))
@@ -111,7 +111,7 @@ class LoggerTest {
     @Test
     fun `log() without encryption does not encrypt logs in the file`() {
         storage.logLevel = Level.TRACE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
 
         val content = currentFile.readText()
         assert(!content.contains("em"))
@@ -122,7 +122,7 @@ class LoggerTest {
     fun `log() without remote enabled does not write to file`() {
         agent.remote = false
         storage.logLevel = Level.TRACE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
 
         assert(currentFile.readText().isBlank())
     }
@@ -130,7 +130,7 @@ class LoggerTest {
     @Test
     fun `log() with remote enabled writes to file`() {
         storage.logLevel = Level.TRACE
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
 
         assert(currentFile.readText().isNotBlank())
     }
@@ -139,7 +139,7 @@ class LoggerTest {
     fun `log() works synchronously`() {
         storage.logLevel = Level.TRACE
         agent.synchronous = true
-        logger.log(Level.TRACE, { "a" }, { "a" })
+        logger.log(Level.TRACE, { JSONObject() }, { "a" })
         assert(currentFile.readText().isNotBlank())
     }
     @Test

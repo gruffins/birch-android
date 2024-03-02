@@ -83,4 +83,24 @@ internal object Utils {
         }
         return output.toByteArray()
     }
+
+    fun splitStringBySize(input: String, chunkSize: Int): List<String> {
+        val chunks = mutableListOf<String>()
+        val length = input.length
+        var startIndex = 0
+
+        while (startIndex < length) {
+            var endIndex = startIndex + chunkSize
+
+            while (endIndex < length && input[endIndex].isHighSurrogate()) {
+                endIndex++
+            }
+
+            chunks.add(input.substring(startIndex, length.coerceAtMost(endIndex)))
+
+            startIndex = endIndex
+        }
+
+        return chunks
+    }
 }

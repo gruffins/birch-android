@@ -76,8 +76,7 @@ internal class Engine(
                     json.put("timestamp", timestamp)
                     json.put("level", level.level)
                     json.put("source", source.toJson())
-                    json.put("message", scrubbed())
-                }.toString()
+                }
             },
             scrubbed
         )
