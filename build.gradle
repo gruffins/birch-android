@@ -4,7 +4,7 @@ plugins {
     id 'com.android.library' version '7.4.0' apply false
     id 'org.jetbrains.kotlin.android' version '1.9.23' apply false
     id 'org.jetbrains.kotlinx.binary-compatibility-validator' version '0.14.0' apply false
-    id 'nl.neotech.plugin.rootcoverage' version '1.7.1'
+    id 'nl.neotech.plugin.rootcoverage' version '1.8.0'
 }
 
 allprojects {
